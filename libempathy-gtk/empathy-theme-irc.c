@@ -87,7 +87,11 @@ theme_irc_append_message (EmpathyChatTextView *view,
 	gtk_text_buffer_get_end_iter (buffer, &iter);
 
 	/* The nickname. */
-	tmp = g_strdup_printf ("%s: ", name);
+	if (empathy_contact_is_user (contact)) {
+		tmp = g_strdup_printf (_("Me: "));
+	} else {
+		tmp = g_strdup_printf ("%s: ", name);
+	}
 	gtk_text_buffer_insert_with_tags_by_name (buffer,
 						  &iter,
 						  tmp,
