@@ -121,6 +121,7 @@ struct _EmpathyMainWindowPriv {
 	GtkWidget              *throbber_tool_item;
 	GtkWidget              *presence_toolbar;
 	GtkWidget              *presence_chooser;
+	GtkWidget              *question_vbox;
 	GtkWidget              *errors_vbox;
 	GtkWidget              *auth_vbox;
 	GtkWidget              *search_bar;
@@ -143,6 +144,9 @@ struct _EmpathyMainWindowPriv {
 	GtkWidget              *edit_context_separator;
 
 	guint                   size_timeout_id;
+
+	/* reffed EmpathyChatroom* => visible GtkInfoBar* */
+	GHashTable             *questions;
 
 	/* reffed TpAccount* => visible GtkInfoBar* */
 	GHashTable             *errors;
@@ -616,13 +620,46 @@ main_window_error_close_clicked_cb (GtkButton         *button,
 	main_window_remove_error (window, account);
 }
 
+static GtkWidget *
+create_new_info_bar (GtkMessageType message_type,
+			   GtkWidget *info_bar_vbox,
+			   TpAccount *account,
+			   GtkWidget *label)
+{
+	GtkWidget   *info_bar;
+	GtkWidget   *content_area;
+	const gchar *icon_name;
+	GtkWidget   *image;
+
+	info_bar = gtk_info_bar_new ();
+	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), message_type);
+
+	gtk_widget_set_no_show_all (info_bar, TRUE);
+	gtk_box_pack_start (GTK_BOX (info_bar_vbox), info_bar, FALSE, TRUE, 0);
+	gtk_widget_show (info_bar);
+
+	icon_name = tp_account_get_icon_name (account);
+	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	gtk_widget_show (image);
+
+	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+	gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+	gtk_widget_show (label);
+
+	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (content_area), label, TRUE, TRUE, 0);
+
+	return info_bar;
+}
+
 static void
 main_window_error_display (EmpathyMainWindow *window,
 			   TpAccount         *account)
 {
 	EmpathyMainWindowPriv *priv = GET_PRIV (window);
 	GtkWidget *info_bar;
-	GtkWidget *content_area;
 	GtkWidget *label;
 	GtkWidget *image;
 	GtkWidget *retry_button;
@@ -631,7 +668,6 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *action_area;
 	GtkWidget *action_table;
 	gchar     *str;
-	const gchar     *icon_name;
 	const gchar *error_message;
 	gboolean user_requested;
 
@@ -657,27 +693,11 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	info_bar = gtk_info_bar_new ();
-	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_ERROR);
-
-	gtk_widget_set_no_show_all (info_bar, TRUE);
-	gtk_box_pack_start (GTK_BOX (priv->errors_vbox), info_bar, FALSE, TRUE, 0);
-	gtk_widget_show (info_bar);
-
-	icon_name = tp_account_get_icon_name (account);
-	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
-	gtk_widget_show (image);
-
 	label = gtk_label_new (str);
-	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-	gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-	gtk_widget_show (label);
+	info_bar = create_new_info_bar (GTK_MESSAGE_ERROR, priv->errors_vbox,
+					account, label);
 	g_free (str);
 
-	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
-	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (content_area), label, TRUE, TRUE, 0);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
 	retry_button = gtk_button_new ();
@@ -856,6 +876,7 @@ empathy_main_window_finalize (GObject *window)
 	g_object_unref (priv->individual_store);
 	g_object_unref (priv->contact_manager);
 	g_object_unref (priv->sound_mgr);
+	g_hash_table_destroy (priv->questions);
 	g_hash_table_destroy (priv->errors);
 	g_hash_table_destroy (priv->auths);
 
@@ -1214,46 +1235,273 @@ finally:
 	g_signal_handler_disconnect (account, ctx->sig_id);
 }
 
-#define JOIN_FAVORITE_TIMEOUT 5
+//typedef struct {
+//	EmpathyMainWindow *window;
+//	EmpathyChatroom   *chatroom;
+//} JoinRoomData;
 
-static gboolean
-join_favorite_timeout_cb (gpointer data)
+static void
+favorite_chatroom_account_reconnected_cb (GObject *source,
+			   GAsyncResult *result,
+			   gpointer user_data)
 {
-	join_fav_account_sig_ctx *ctx = data;
+	TpAccount       *account = TP_ACCOUNT (source);
+	GError          *error = NULL;
 
-	/* stop waiting for joining the favorite room */
-	g_signal_handler_disconnect (ctx->account, ctx->sig_id);
-	return FALSE;
+	if (!tp_account_reconnect_finish (account, result, &error)) {
+		DEBUG ("Account %s failed to get enabled: %s",
+				tp_account_get_display_name (account), error->message);
+		g_error_free (error);
+		return;
+	}
+}
+
+static void
+favorite_chatroom_account_enabled_cb (GObject *source,
+			   GAsyncResult *result,
+			   gpointer user_data)
+{
+	TpAccount       *account = TP_ACCOUNT (source);
+	GError          *error = NULL;
+
+	if (!tp_account_set_enabled_finish (account, result, &error)) {
+		DEBUG ("Account %s failed to get enabled: %s",
+				tp_account_get_display_name (account), error->message);
+		g_error_free (error);
+		return;
+	}
+}
+
+static void
+connect_to_status_changed (EmpathyChatroom *chatroom)
+{
+	TpAccount                *account;
+	join_fav_account_sig_ctx *ctx;
+
+	account = empathy_chatroom_get_account (chatroom);
+
+	ctx = join_fav_account_sig_ctx_new (account, chatroom,
+		gtk_get_current_event_time ());
+
+	ctx->sig_id = g_signal_connect_data (account, "status-changed",
+		G_CALLBACK (account_status_changed_cb), ctx,
+		(GClosureNotify) join_fav_account_sig_ctx_free, 0);
+}
+
+static void
+main_window_remove_question (EmpathyChatroom *chatroom)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (g_object_get_data (
+		G_OBJECT(chatroom), "main_window"));
+	GtkWidget *question_widget;
+
+	question_widget = g_hash_table_lookup (priv->questions, chatroom);
+	if (question_widget != NULL) {
+		gtk_widget_destroy (question_widget);
+		g_hash_table_remove (priv->questions, chatroom);
+	}
+}
+
+static void
+main_window_question_response_cancel_cb (GtkButton *button,
+			   EmpathyChatroom *chatroom)
+{
+	TpAccount *account;
+
+	account = empathy_chatroom_get_account (chatroom);
+	main_window_remove_question (chatroom);
+}
+
+static void
+main_window_question_response_reconnect_cb (GtkButton *button,
+			   EmpathyChatroom *chatroom)
+{
+	TpAccount *account;
+
+	account = empathy_chatroom_get_account (chatroom);
+
+	DEBUG ("Reconnecting account %s", tp_account_get_display_name (account));
+
+	if (tp_account_get_connection_status (account, NULL) ==
+			TP_CONNECTION_STATUS_DISCONNECTED) {
+		tp_account_reconnect_async (account,
+			favorite_chatroom_account_reconnected_cb, chatroom);
+	}
+
+	if (tp_account_get_connection_status (account, NULL) !=
+			TP_CONNECTION_STATUS_CONNECTED) {
+		/* Connection status will change */
+		connect_to_status_changed (chatroom);
+	} else {
+		join_chatroom (chatroom, gtk_get_current_event_time ());
+	}
+
+	main_window_remove_question (chatroom);
+}
+
+static void
+main_window_question_response_enable_cb (GtkButton *button,
+			   EmpathyChatroom *chatroom)
+{
+	TpAccount      *account;
+
+	account = empathy_chatroom_get_account (chatroom);
+
+	DEBUG ("Enabling account %s", tp_account_get_display_name (account));
+
+	if (!tp_account_is_enabled (account)) {
+		tp_account_set_enabled_async (account, TRUE,
+			favorite_chatroom_account_enabled_cb, chatroom);
+
+		/* Connection status will change */
+		connect_to_status_changed (chatroom);
+
+		main_window_remove_question (chatroom);
+	} else {
+		main_window_question_response_reconnect_cb (NULL, chatroom);
+	}
+}
+
+static void
+set_up_question_info_bar (gchar *text,
+				gchar           *action_tooltip,
+				EmpathyChatroom *chatroom,
+				TpAccount       *account,
+				GCallback        main_window_question_response_apply_cb)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (g_object_get_data (
+		G_OBJECT(chatroom), "main_window"));
+	GtkWidget   *info_bar;
+	GtkWidget   *label;
+	GtkWidget   *image;
+	GtkWidget   *apply_button;
+	GtkWidget   *cancel_button;
+	GtkWidget   *action_area;
+	GtkWidget   *action_table;
+	const gchar *display_name;
+
+	display_name = tp_account_get_display_name (account);
+
+	info_bar = g_hash_table_lookup (priv->questions, chatroom);
+	if (info_bar) {
+		label = g_object_get_data (G_OBJECT (info_bar), "label");
+
+		/* Just set the latest error and return */
+		gtk_label_set_markup (GTK_LABEL (label), text);
+		return;
+	}
+
+	label = gtk_label_new (text);
+	info_bar = create_new_info_bar (GTK_MESSAGE_QUESTION, priv->question_vbox,
+					account, label);
+
+
+	image = gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_BUTTON);
+	apply_button = gtk_button_new ();
+	gtk_button_set_image (GTK_BUTTON (apply_button), image);
+	gtk_widget_set_tooltip_text (apply_button, _(action_tooltip));
+	gtk_widget_show (apply_button);
+
+	image = gtk_image_new_from_stock (GTK_STOCK_CANCEL, GTK_ICON_SIZE_BUTTON);
+	cancel_button = gtk_button_new ();
+	gtk_button_set_image (GTK_BUTTON (cancel_button), image);
+	gtk_widget_set_tooltip_text (cancel_button, _("Cancel"));
+	gtk_widget_show (cancel_button);
+
+	action_table = gtk_table_new (1, 2, FALSE);
+	gtk_table_set_col_spacings (GTK_TABLE (action_table), 2);
+	gtk_widget_show (action_table);
+
+	action_area = gtk_info_bar_get_action_area (GTK_INFO_BAR (info_bar));
+	gtk_box_pack_start (GTK_BOX (action_area), action_table, FALSE, FALSE, 0);
+
+	gtk_table_attach (GTK_TABLE (action_table), apply_button, 0, 1, 0, 1,
+										(GtkAttachOptions) (GTK_SHRINK),
+										(GtkAttachOptions) (GTK_SHRINK), 0, 0);
+	gtk_table_attach (GTK_TABLE (action_table), cancel_button, 1, 2, 0, 1,
+										(GtkAttachOptions) (GTK_SHRINK),
+										(GtkAttachOptions) (GTK_SHRINK), 0, 0);
+
+	g_object_set_data (G_OBJECT (info_bar), "label", label);
+
+	g_signal_connect (apply_button, "clicked",
+			  G_CALLBACK (main_window_question_response_apply_cb),
+			  chatroom);
+	g_signal_connect (cancel_button, "clicked",
+			  G_CALLBACK (main_window_question_response_cancel_cb),
+			  chatroom);
+
+	gtk_widget_set_tooltip_markup (info_bar, text);
+	gtk_widget_show (priv->question_vbox);
+
+	g_hash_table_insert (priv->questions, g_object_ref (chatroom), info_bar);
 }
 
 static void
 main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 {
 	TpAccount      *account;
+	const gchar    *display_name;
+	const gchar    *chatroom_name;
+	gboolean        enabled;
+	guint           connection_status;
+	gchar          *str;
 
 	account = empathy_chatroom_get_account (chatroom);
-	if (tp_account_get_connection_status (account, NULL) !=
-					     TP_CONNECTION_STATUS_CONNECTED) {
-		join_fav_account_sig_ctx *ctx;
+	display_name = tp_account_get_display_name (account);
+	chatroom_name = empathy_chatroom_get_name (chatroom);
+	enabled = tp_account_is_enabled (account);
+	connection_status = tp_account_get_connection_status (account, NULL);
 
-		ctx = join_fav_account_sig_ctx_new (account, chatroom,
-			gtk_get_current_event_time ());
+	if (enabled) {
+		switch (connection_status) {
+			case TP_CONNECTION_STATUS_DISCONNECTED:
+				/* Since the account is enabled, there might be an unclosed
+				 * error bar which should be removed */
+				main_window_remove_error (g_object_get_data (
+					G_OBJECT(chatroom), "main_window"), account);
 
-		ctx->sig_id = g_signal_connect_data (account, "status-changed",
-			G_CALLBACK (account_status_changed_cb), ctx,
-			(GClosureNotify) join_fav_account_sig_ctx_free, 0);
+				/* Prompt for reconnection */
+				str = g_markup_printf_escaped (
+					"<b>Account %s is disconnected</b>\n"
+					"Reconnect and join <b>%s</b> now?",
+					  display_name, chatroom_name);
 
-		ctx->timeout = g_timeout_add_seconds (JOIN_FAVORITE_TIMEOUT,
-			join_favorite_timeout_cb, ctx);
-		return;
+				set_up_question_info_bar (str, "Reconnect and Join", chatroom,
+					account,
+					G_CALLBACK(main_window_question_response_reconnect_cb));
+				g_free (str);
+				break;
+
+			case TP_CONNECTION_STATUS_CONNECTING:
+				/* Connection status will change */
+				connect_to_status_changed (chatroom);
+				break;
+
+			case TP_CONNECTION_STATUS_CONNECTED:
+				/* We can join the room */
+				join_chatroom (chatroom, gtk_get_current_event_time ());
+				return;
+
+			default:
+				g_assert_not_reached ();
+		}
+	} else {
+		/* Prompt for enabling */
+		str = g_markup_printf_escaped (
+			_("<b>Account %s is disabled</b>\n"
+			"Enable and join <b>%s</b> now?"),
+			  display_name, chatroom_name);
+
+		set_up_question_info_bar (str, "Enable and Join", chatroom,
+				account, G_CALLBACK(main_window_question_response_enable_cb));
+		g_free (str);
 	}
-
-	join_chatroom (chatroom, gtk_get_current_event_time ());
 }
 
 static void
 main_window_favorite_chatroom_menu_activate_cb (GtkMenuItem     *menu_item,
-						EmpathyChatroom *chatroom)
+					EmpathyChatroom *chatroom)
 {
 	main_window_favorite_chatroom_join (chatroom);
 }
@@ -1263,8 +1511,8 @@ main_window_favorite_chatroom_menu_add (EmpathyMainWindow *window,
 					EmpathyChatroom   *chatroom)
 {
 	EmpathyMainWindowPriv *priv = GET_PRIV (window);
-	GtkWidget   *menu_item;
-	const gchar *name;
+	GtkWidget    *menu_item;
+	const gchar  *name;
 
 	if (g_object_get_data (G_OBJECT (chatroom), "menu_item")) {
 		return;
@@ -1276,6 +1524,7 @@ main_window_favorite_chatroom_menu_add (EmpathyMainWindow *window,
 			GUINT_TO_POINTER (TRUE));
 
 	g_object_set_data (G_OBJECT (chatroom), "menu_item", menu_item);
+	g_object_set_data (G_OBJECT (chatroom), "main_window", window);
 	g_signal_connect (menu_item, "activate",
 			  G_CALLBACK (main_window_favorite_chatroom_menu_activate_cb),
 			  chatroom);
@@ -1374,6 +1623,7 @@ main_window_room_join_favorites_cb (GtkAction         *action,
 
 	chatrooms = empathy_chatroom_manager_get_chatrooms (priv->chatroom_manager, NULL);
 	for (l = chatrooms; l; l = l->next) {
+		g_object_set_data (G_OBJECT (l->data), "main_window", window);
 		main_window_favorite_chatroom_join (l->data);
 	}
 	g_list_free (chatrooms);
@@ -1746,6 +1996,7 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	filename = empathy_file_lookup ("empathy-main-window.ui", "src");
 	gui = empathy_builder_get_file (filename,
 				       "main_vbox", &priv->main_vbox,
+				       "errors_vbox", &priv->question_vbox,
 				       "errors_vbox", &priv->errors_vbox,
 				       "auth_vbox", &priv->auth_vbox,
 				       "ui_manager", &priv->ui_manager,
@@ -1811,6 +2062,11 @@ empathy_main_window_init (EmpathyMainWindow *window)
 
 	tp_account_manager_prepare_async (priv->account_manager, NULL,
 					  account_manager_prepared_cb, window);
+
+	priv->questions = g_hash_table_new_full (g_direct_hash,
+						  g_direct_equal,
+						  g_object_unref,
+						  NULL);
 
 	priv->errors = g_hash_table_new_full (g_direct_hash,
 					      g_direct_equal,
