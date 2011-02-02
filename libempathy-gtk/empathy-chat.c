@@ -3018,6 +3018,10 @@ display_password_info_bar (EmpathyChat *self,
 	}
 	else {
 		/* First time we're trying to join */
+		if (gtk_container_get_children (GTK_CONTAINER (priv->info_bar_vbox))) {
+			/* There might be a reconnection caused with unclosed info bar */
+			return;
+		}
 		type = GTK_MESSAGE_QUESTION;
 		msg = _("This room is protected by a password:");
 		button_label = _("Join");
