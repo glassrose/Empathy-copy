@@ -74,6 +74,11 @@ struct _EmpathyRosterViewPriv
   EmpathyRosterModel *model;
 };
 
+/* Prototypes to break cycles */
+static void remove_from_group (EmpathyRosterView *self,
+    FolksIndividual *individual,
+    const gchar *group);
+
 typedef struct
 {
   guint id;
@@ -346,6 +351,14 @@ add_to_group (EmpathyRosterView *self,
     {
       update_group_widgets (self, roster_group,
           EMPATHY_ROSTER_CONTACT (contact), TRUE);
+    }
+
+  if (tp_strdiff (group, NO_GROUP) &&
+      tp_strdiff (group, EMPATHY_ROSTER_MODEL_GROUP_UNGROUPED) &&
+      g_hash_table_size (contacts) == 2)
+    {
+      remove_from_group (self, individual,
+          EMPATHY_ROSTER_MODEL_GROUP_UNGROUPED);
     }
 }
 
