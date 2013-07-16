@@ -26,6 +26,7 @@
 
 #include <sys/stat.h>
 #include <glib/gi18n.h>
+#include <libempathy-gtk/empathy-live-search.h>
 
 #include "empathy-about-dialog.h"
 #include "empathy-accounts-dialog.h"
@@ -347,6 +348,11 @@ individual_activated_cb (EmpathyRosterView *self,
   empathy_chat_with_contact (contact, gtk_get_current_event_time ());
 
   g_object_unref (contact);
+
+  /* Hide the search-bar upon hitting "Enter" on an individual */
+  if (EMPATHY_IS_LIVE_SEARCH (self->priv->search_bar) &&
+      gtk_widget_is_visible (self->priv->search_bar))
+    gtk_widget_hide (self->priv->search_bar);
 }
 
 static void
