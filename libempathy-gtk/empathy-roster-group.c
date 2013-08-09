@@ -33,6 +33,21 @@ struct _EmpathyRosterGroupPriv
 };
 
 static void
+roster_group_set_label (EmpathyRosterGroup *self,
+    GtkWidget *label_widget)
+{
+  gchar *tmp;
+  GtkWidget *label;
+
+  tmp = g_strdup_printf ("<b>%s</b>", self->priv->name);
+  label = gtk_label_new (tmp);
+  g_free (tmp);
+
+  gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+  gtk_box_pack_start (GTK_BOX (label_widget), label, TRUE, TRUE, 0);
+}
+
+static void
 empathy_roster_group_get_property (GObject *object,
     guint property_id,
     GValue *value,
@@ -84,8 +99,7 @@ empathy_roster_group_constructed (GObject *object)
   EmpathyRosterGroup *self = EMPATHY_ROSTER_GROUP (object);
   void (*chain_up) (GObject *) =
       ((GObjectClass *) empathy_roster_group_parent_class)->constructed;
-  gchar *tmp;
-  GtkWidget *box, *label;
+  GtkWidget *box;
 
   if (chain_up != NULL)
     chain_up (object);
@@ -107,12 +121,7 @@ empathy_roster_group_constructed (GObject *object)
     }
 
   /* Label */
-  tmp = g_strdup_printf ("<b>%s</b>", self->priv->name);
-  label = gtk_label_new (tmp);
-  g_free (tmp);
-
-  gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-  gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
+  roster_group_set_label (self, box);
 
   gtk_widget_show_all (box);
 
