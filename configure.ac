@@ -150,6 +150,7 @@ AM_PATH_PYTHON([2.3])
 
 EMPATHY_ARG_VALGRIND
 
+AM_CONDITIONAL([ENABLE_INSTALLED_TESTS], [test 1 = 0])
 
 # -----------------------------------------------------------
 # Error flags

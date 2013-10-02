@@ -1,14 +1,19 @@
 abs_top_builddir = @abs_top_builddir@
 
-noinst_SCRIPTS = telepathy-glib-env empathy-env
+noinst_SCRIPTS = telepathy-glib-env
 
 telepathy-glib-env: telepathy-glib-env.in Makefile
 	sed -e 's![@]abs_top_builddir[@]!$(abs_top_builddir)!' $< > $@
 	chmod +x $@
 
-empathy-env: empathy-env.in Makefile
-	sed -e 's![@]abs_top_builddir[@]!$(abs_top_builddir)!' $< > $@
-	chmod +x $@
+if ENABLE_INSTALLED_TESTS
+toolsdir = @tpglibtestsdir@/tools
+tools_SCRIPTS = \
+	test-wrapper.sh \
+	libglibcodegen.py \
+	libtpcodegen.py \
+	$(NULL)
+endif
 
 EXTRA_DIST = \
     c-constants-gen.py \
@@ -37,9 +42,7 @@ EXTRA_DIST = \
     telepathy.am \
     telepathy-glib.supp \
     telepathy-glib-env.in \
-    empathy-env.in \
     test-wrapper.sh \
-    with-session-bus.sh \
     xincludator.py
 
 CLEANFILES = libtpcodegen.pyc libtpcodegen.pyo libglibcodegen.pyc libglibcodegen.pyo $(noinst_SCRIPTS)
