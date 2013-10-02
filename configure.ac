@@ -51,9 +51,9 @@ AC_DEFINE(CLUTTER_VERSION_MAX_ALLOWED, CLUTTER_VERSION_1_10, [Prevent post 1.10 
 
 CLUTTER_GTK_REQUIRED=1.1.2
 
-TELEPATHY_GLIB_REQUIRED=0.19.9
-AC_DEFINE(TP_VERSION_MIN_REQUIRED, TP_VERSION_0_20, [Ignore post 0.20 deprecations])
-AC_DEFINE(TP_VERSION_MAX_ALLOWED, TP_VERSION_0_20, [Prevent post 0.20 APIs])
+TELEPATHY_GLIB_REQUIRED=0.99.1
+AC_DEFINE(TP_VERSION_MIN_REQUIRED, TP_VERSION_1_0, [Ignore post 1.0 deprecations])
+AC_DEFINE(TP_VERSION_MAX_ALLOWED, TP_VERSION_1_0, [Prevent post 1.0 APIs])
 AC_DEFINE(TP_SEAL_ENABLE, 1, [Prevent to use sealed variables])
 AC_DEFINE(TP_DISABLE_SINGLE_INCLUDE, 1, [Disable single include header])
 
@@ -223,8 +223,8 @@ PKG_CHECK_MODULES(EMPATHY,
    gobject-2.0
    gsettings-desktop-schemas
    libxml-2.0
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   telepathy-logger-0.2 >= $TELEPATHY_LOGGER
+   telepathy-glib-1 >= $TELEPATHY_GLIB_REQUIRED
+   telepathy-logger-1 >= $TELEPATHY_LOGGER
    x11
    gtk+-3.0 >= $GTK_REQUIRED
    libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED
@@ -243,7 +243,7 @@ PKG_CHECK_MODULES(EMPATHY,
 PKG_CHECK_MODULES(EMPATHY_CALL,
 [
    farstream-0.2
-   telepathy-farstream >= $TP_FS_REQUIRED
+   telepathy-farstream-1 >= $TP_FS_REQUIRED
    clutter-1.0 >= $CLUTTER_REQUIRED
    clutter-gtk-1.0 >= $CLUTTER_GTK_REQUIRED
    clutter-gst-2.0
