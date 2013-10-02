@@ -85,7 +85,7 @@ G_BEGIN_DECLS
 #define EMPATHY_PREFS_LOCATION_PUBLISH             "publish"
 #define EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY     "reduce-accuracy"
 
-#define EMPATHY_PREFS_LOGGER_SCHEMA "org.freedesktop.Telepathy.Logger"
+#define EMPATHY_PREFS_LOGGER_SCHEMA "im.telepathy1.Logger"
 #define EMPATHY_PREFS_LOGGER_ENABLED "enabled"
 
 #define EMPATHY_PREFS_DESKTOP_INTERFACE_SCHEMA "org.gnome.desktop.interface"

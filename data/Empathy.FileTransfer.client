@@ -1,7 +1,7 @@
-[org.freedesktop.Telepathy.Client]
-Interfaces=org.freedesktop.Telepathy.Client.Handler
+[im.telepathy1.Client]
+Interfaces=im.telepathy1.Client.Handler
 
-[org.freedesktop.Telepathy.Client.Handler.HandlerChannelFilter 0]
-org.freedesktop.Telepathy.Channel.ChannelType s=org.freedesktop.Telepathy.Channel.Type.FileTransfer
-org.freedesktop.Telepathy.Channel.TargetHandleType u=1
-org.freedesktop.Telepathy.Channel.Requested b=false
+[im.telepathy1.Client.Handler.HandlerChannelFilter 0]
+im.telepathy1.Channel.ChannelType s=im.telepathy1.Channel.Type.FileTransfer
+im.telepathy1.Channel.TargetHandleType u=1
+im.telepathy1.Channel.Requested b=false

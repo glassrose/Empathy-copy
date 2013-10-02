@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 #define EMPATHY_DEBUG_WINDOW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS \
     ((object), EMPATHY_TYPE_DEBUG_WINDOW, EmpathyDebugWindowClass))
 
-#define DEBUG_OBJECT_PATH "/org/freedesktop/Telepathy/debug"
+#define DEBUG_OBJECT_PATH "/im/telepathy1/debug"
 
 typedef struct _EmpathyDebugWindow EmpathyDebugWindow;
 typedef struct _EmpathyDebugWindowClass EmpathyDebugWindowClass;

@@ -1,5 +1,5 @@
 [ConnectionManager]
-BusName=org.freedesktop.Telepathy.ConnectionManager.test
-ObjectPath=/org/freedesktop/Telepathy/ConnectionManager/test
+BusName=im.telepathy1.ConnectionManager.test
+ObjectPath=/im/telepathy1/ConnectionManager/test
 
 [Protocol test]
