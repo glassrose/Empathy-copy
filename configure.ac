@@ -457,7 +457,7 @@ AC_ARG_ENABLE(goa,
 if test "x$enable_goa" != "xno"; then
    PKG_CHECK_MODULES(GOA,
     [
-       mission-control-plugins
+       mission-control-plugins-6
        goa-1.0 >= $GOA_REQUIRED
     ], have_goa="yes", have_goa="no")
 else
@@ -509,7 +509,7 @@ if test "x$enable_ubuntu_online_accounts" != "xno"; then
    PKG_CHECK_MODULES(UOA,
     [
        account-plugin
-       mission-control-plugins >= $MC_PLUGINS_REQUIRED
+       mission-control-plugins-6 >= $MC_PLUGINS_REQUIRED
        libaccounts-glib >= $LIBACCOUNTS_REQUIRED
        libsignon-glib >= $LIBSIGNON_REQUIRED
     ], have_uoa="yes", have_uoa="no")
@@ -567,7 +567,7 @@ AM_CONDITIONAL(HAVE_UOA, test "x$have_uoa" = "xyes")
 
 if test "x$have_uoa" = "xyes" -o "x$have_goa" = "xyes"; then
    AC_MSG_CHECKING([Mission Control plugins dir])
-   MISSION_CONTROL_PLUGINS_DIR=`pkg-config --define-variable=libdir='${libdir}' --variable=plugindir mission-control-plugins`
+   MISSION_CONTROL_PLUGINS_DIR=`pkg-config --define-variable=libdir='${libdir}' --variable=plugindir mission-control-plugins-6`
 
    AC_MSG_RESULT([$MISSION_CONTROL_PLUGINS_DIR])
    AC_SUBST(MISSION_CONTROL_PLUGINS_DIR)
