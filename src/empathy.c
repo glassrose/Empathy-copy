@@ -708,7 +708,7 @@ account_manager_chatroom_ready_cb (GObject *source_object,
       return;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (account_manager);
+  accounts = tp_account_manager_dup_usable_accounts (account_manager);
 
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
@@ -805,8 +805,8 @@ add_empathy_features (void)
 
   factory = empathy_client_factory_dup ();
 
-  tp_simple_client_factory_add_connection_features_varargs (
-      TP_SIMPLE_CLIENT_FACTORY (factory),
+  tp_client_factory_add_connection_features_varargs (
+      TP_CLIENT_FACTORY (factory),
       /* empathy_connection_aggregator_get_all_groups(), used by
        * EmpathyGroupsWidget relies on it */
       TP_CONNECTION_FEATURE_CONTACT_GROUPS,

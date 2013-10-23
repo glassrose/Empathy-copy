@@ -224,7 +224,7 @@ empathy_local_xmpp_assistant_widget_should_create_account (
   gboolean salut_created = FALSE;
   GList *accounts, *l;
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
 
   for (l = accounts; l != NULL;  l = g_list_next (l))
     {

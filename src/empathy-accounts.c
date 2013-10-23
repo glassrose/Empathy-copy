@@ -67,7 +67,7 @@ find_account (TpAccountManager *mgr,
   GList *accounts, *l;
   TpAccount *found = NULL;
 
-  accounts = tp_account_manager_dup_valid_accounts (mgr);
+  accounts = tp_account_manager_dup_usable_accounts (mgr);
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
       if (!tp_strdiff (tp_proxy_get_object_path (l->data), path))

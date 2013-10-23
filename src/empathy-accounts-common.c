@@ -38,7 +38,7 @@ empathy_accounts_has_non_salut_accounts (TpAccountManager *manager)
   gboolean ret = FALSE;
   GList *accounts, *l;
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
 
   for (l = accounts ; l != NULL; l = g_list_next (l))
     {
@@ -60,7 +60,7 @@ empathy_accounts_has_accounts (TpAccountManager *manager)
   GList *accounts;
   gboolean has_accounts;
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
   has_accounts = (accounts != NULL);
   g_list_free_full (accounts, g_object_unref);
 

@@ -300,7 +300,7 @@ find_phone_accounts (void)
   am = tp_account_manager_dup ();
   g_return_val_if_fail (am != NULL, NULL);
 
-  accounts = tp_account_manager_dup_valid_accounts (am);
+  accounts = tp_account_manager_dup_usable_accounts (am);
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
       TpAccount *account = l->data;

@@ -746,7 +746,7 @@ display_invite_room_dialog (EventManagerApproval *approval)
   EmpathyEventManagerPriv *priv = GET_PRIV (approval->manager);
 
   self_contact = tp_channel_group_get_self_contact (approval->main_channel);
-  tp_channel_group_get_local_pending_contact_info (approval->main_channel,
+  tp_channel_group_get_local_pending_info (approval->main_channel,
       self_contact, NULL, NULL, &invite_msg);
 
   if (approval->contact != NULL)

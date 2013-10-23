@@ -235,7 +235,7 @@ contact_blocking_dialog_am_prepared (GObject *am,
       return;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (TP_ACCOUNT_MANAGER (am));
+  accounts = tp_account_manager_dup_usable_accounts (TP_ACCOUNT_MANAGER (am));
 
   for (ptr = accounts; ptr != NULL; ptr = ptr->next)
     {
@@ -350,7 +350,7 @@ contact_blocking_dialog_add_contact (GtkWidget *widget,
       identifier, get_pretty_conn_name (conn));
 
   tp_connection_dup_contact_by_id_async (conn, identifier,
-      0, NULL, block_contact_got_contact,
+      NULL, block_contact_got_contact,
       tp_weak_ref_new (self, NULL, NULL));
 
   gtk_entry_set_text (GTK_ENTRY (self->priv->add_contact_entry), "");
@@ -603,7 +603,7 @@ empathy_contact_blocking_dialog_init (EmpathyContactBlockingDialog *self)
   GtkEntryCompletion *completion;
   TpAccountManager *am;
   GtkStyleContext *context;
-  TpSimpleClientFactory *factory;
+  TpClientFactory *factory;
 
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
       EMPATHY_TYPE_CONTACT_BLOCKING_DIALOG,
@@ -700,7 +700,7 @@ empathy_contact_blocking_dialog_init (EmpathyContactBlockingDialog *self)
   am = tp_account_manager_dup ();
 
   factory = tp_proxy_get_factory (am);
-  tp_simple_client_factory_add_connection_features_varargs (factory,
+  tp_client_factory_add_connection_features_varargs (factory,
       TP_CONNECTION_FEATURE_CONTACT_BLOCKING, NULL);
 
   tp_proxy_prepare_async (am, NULL, contact_blocking_dialog_am_prepared, self);

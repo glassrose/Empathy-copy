@@ -175,7 +175,7 @@ empathy_check_available_state (void)
    * See https://bugzilla.gnome.org/show_bug.cgi?id=704454 */
   most_available_requested_presence = TP_CONNECTION_PRESENCE_TYPE_UNSET;
   am = tp_account_manager_dup ();
-  accounts = tp_account_manager_dup_valid_accounts (am);
+  accounts = tp_account_manager_dup_usable_accounts (am);
   while (accounts != NULL)
     {
       TpAccount *account = accounts->data;

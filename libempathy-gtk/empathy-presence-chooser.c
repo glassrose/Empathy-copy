@@ -752,7 +752,7 @@ update_sensitivity_am_prepared_cb (GObject *source_object,
 		return;
 	}
 
-	accounts = tp_account_manager_dup_valid_accounts (manager);
+	accounts = tp_account_manager_dup_usable_accounts (manager);
 
 	for (l = accounts ; l != NULL ; l = g_list_next (l)) {
 		TpAccount *a = TP_ACCOUNT (l->data);
@@ -784,10 +784,10 @@ presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
 }
 
 static void
-presence_chooser_account_manager_account_validity_changed_cb (
+presence_chooser_account_manager_account_usability_changed_cb (
 	TpAccountManager *manager,
 	TpAccount *account,
-	gboolean valid,
+	gboolean usable,
 	EmpathyPresenceChooser *chooser)
 {
 	presence_chooser_update_sensitivity (chooser);
@@ -889,8 +889,8 @@ presence_chooser_constructed (GObject *object)
 		G_CALLBACK (presence_chooser_presence_changed_cb),
 		chooser);
 
-	tp_g_signal_connect_object (priv->account_manager, "account-validity-changed",
-		G_CALLBACK (presence_chooser_account_manager_account_validity_changed_cb),
+	tp_g_signal_connect_object (priv->account_manager, "account-usability-changed",
+		G_CALLBACK (presence_chooser_account_manager_account_usability_changed_cb),
 		chooser, 0);
 	tp_g_signal_connect_object (priv->account_manager, "account-removed",
 		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),

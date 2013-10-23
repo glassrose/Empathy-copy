@@ -209,7 +209,7 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
       COL_PROTOCOL, &protocol,
       -1);
 
-  tp_protocol = tp_connection_manager_get_protocol_object (
+  tp_protocol = tp_connection_manager_get_protocol (
       tpaw_protocol_get_cm (protocol),
       tpaw_protocol_get_protocol_name (protocol));
 

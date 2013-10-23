@@ -121,10 +121,10 @@ enum {
   COL_ACCOUNT_COUNT
 };
 
-static void account_chooser_account_validity_changed_cb (
+static void account_chooser_account_usability_changed_cb (
     TpAccountManager *manager,
     TpAccount *account,
-    gboolean valid,
+    gboolean usable,
     EmpathyAccountChooser *self);
 static void account_chooser_account_add_foreach (TpAccount *account,
     EmpathyAccountChooser *self);
@@ -172,7 +172,7 @@ G_DEFINE_TYPE (EmpathyAccountChooser, empathy_account_chooser,
 static void
 empathy_account_chooser_init (EmpathyAccountChooser *self)
 {
-  TpSimpleClientFactory *factory;
+  TpClientFactory *factory;
 
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
     EMPATHY_TYPE_ACCOUNT_CHOOSER, EmpathyAccountChooserPriv);
@@ -184,8 +184,8 @@ empathy_account_chooser_init (EmpathyAccountChooser *self)
 
   self->priv->manager = tp_account_manager_dup ();
 
-  tp_g_signal_connect_object (self->priv->manager, "account-validity-changed",
-      G_CALLBACK (account_chooser_account_validity_changed_cb), self, 0);
+  tp_g_signal_connect_object (self->priv->manager, "account-usability-changed",
+      G_CALLBACK (account_chooser_account_usability_changed_cb), self, 0);
 
   tp_g_signal_connect_object (self->priv->manager, "account-removed",
       G_CALLBACK (account_chooser_account_removed_cb), self, 0);
@@ -193,9 +193,9 @@ empathy_account_chooser_init (EmpathyAccountChooser *self)
   /* Make sure we'll have the capabilities feature on TpAccount's connection */
   factory = tp_proxy_get_factory (self->priv->manager);
 
-  tp_simple_client_factory_add_account_features_varargs (factory,
+  tp_client_factory_add_account_features_varargs (factory,
       TP_ACCOUNT_FEATURE_CONNECTION, NULL);
-  tp_simple_client_factory_add_connection_features_varargs (factory,
+  tp_client_factory_add_connection_features_varargs (factory,
       TP_CONNECTION_FEATURE_CAPABILITIES, NULL);
 }
 
@@ -271,7 +271,7 @@ account_manager_prepared_cb (GObject *source_object,
       return;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
 
   for (l = accounts; l != NULL; l = l->next)
     {
@@ -705,12 +705,12 @@ empathy_account_chooser_set_has_all_option (EmpathyAccountChooser *self,
 }
 
 static void
-account_chooser_account_validity_changed_cb (TpAccountManager *manager,
+account_chooser_account_usability_changed_cb (TpAccountManager *manager,
     TpAccount *account,
-    gboolean valid,
+    gboolean usable,
     EmpathyAccountChooser *self)
 {
-  if (valid)
+  if (usable)
     account_chooser_account_add_foreach (account, self);
   else
     account_chooser_account_remove_foreach (account, self);

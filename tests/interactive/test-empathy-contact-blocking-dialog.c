@@ -57,8 +57,8 @@ main (int argc,
      * so we prepare it first. */
     factory = empathy_client_factory_dup ();
 
-    tp_simple_client_factory_add_connection_features_varargs (
-        TP_SIMPLE_CLIENT_FACTORY (factory),
+    tp_client_factory_add_connection_features_varargs (
+        TP_CLIENT_FACTORY (factory),
         TP_CONNECTION_FEATURE_CONTACT_LIST,
         NULL);
 

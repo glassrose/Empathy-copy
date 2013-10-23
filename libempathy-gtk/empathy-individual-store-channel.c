@@ -202,7 +202,7 @@ individual_store_channel_set_individual_channel (
   self->priv->channel = g_object_ref (channel);
 
   /* Add initial members */
-  members = tp_channel_group_dup_members_contacts (channel);
+  members = tp_channel_group_dup_members (channel);
   if (members != NULL)
     {
       add_members (self, members);
@@ -305,7 +305,7 @@ individual_store_channel_reload_individuals (EmpathyIndividualStore *store)
   g_ptr_array_unref (members);
 
   /* re-add members */
-  members = tp_channel_group_dup_members_contacts (self->priv->channel);
+  members = tp_channel_group_dup_members (self->priv->channel);
   if (members == NULL)
     return;
 
@@ -320,7 +320,7 @@ individual_store_channel_initial_loading (EmpathyIndividualStore *store)
       store);
 
   return !tp_proxy_is_prepared (self->priv->channel,
-      TP_CHANNEL_FEATURE_CONTACTS);
+      TP_CHANNEL_FEATURE_GROUP);
 }
 
 static void

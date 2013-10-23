@@ -867,7 +867,7 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
           EMPATHY_NEW_ACCOUNT_DIALOG (dialog));
 
       /* The newly created account has already been added by
-       * accounts_dialog_account_validity_changed_cb so we just
+       * accounts_dialog_account_usability_changed_cb so we just
        * have to select it. */
       account = tpaw_account_settings_get_account (settings);
       accounts_dialog_model_set_selected (self, account);
@@ -1233,7 +1233,7 @@ accounts_dialog_remove_account_iter (EmpathyAccountsDialog *dialog,
 
   gtk_tree_model_get (model, iter, COL_ACCOUNT, &account, -1);
 
-  if (account == NULL || !tp_account_is_valid (account))
+  if (account == NULL || !tp_account_is_usable (account))
     {
       if (account != NULL)
         g_object_unref (account);
@@ -1906,9 +1906,9 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 }
 
 static void
-accounts_dialog_account_validity_changed_cb (TpAccountManager *manager,
+accounts_dialog_account_usability_changed_cb (TpAccountManager *manager,
     TpAccount *account,
-    gboolean valid,
+    gboolean usable,
     EmpathyAccountsDialog *dialog)
 {
   accounts_dialog_add_account (dialog, account);
@@ -2181,8 +2181,8 @@ accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   GList *accounts, *l;
 
-  g_signal_connect (priv->account_manager, "account-validity-changed",
-      G_CALLBACK (accounts_dialog_account_validity_changed_cb),
+  g_signal_connect (priv->account_manager, "account-usability-changed",
+      G_CALLBACK (accounts_dialog_account_usability_changed_cb),
       dialog);
   g_signal_connect (priv->account_manager, "account-removed",
       G_CALLBACK (accounts_dialog_account_removed_cb),
@@ -2195,7 +2195,7 @@ accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
       dialog);
 
   /* Add existing accounts */
-  accounts = tp_account_manager_dup_valid_accounts (priv->account_manager);
+  accounts = tp_account_manager_dup_usable_accounts (priv->account_manager);
   for (l = accounts; l; l = l->next)
     {
       accounts_dialog_add_account (dialog, l->data);

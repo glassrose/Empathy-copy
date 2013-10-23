@@ -151,7 +151,7 @@ create_conference_cb (GObject *source,
   GError *error = NULL;
   GHashTable *props;
 
-  channel = tp_account_channel_request_create_and_observe_channel_finish (
+  channel = tp_account_channel_request_create_channel_finish (
       TP_ACCOUNT_CHANNEL_REQUEST (source), result, &error);
   if (channel == NULL)
     {
@@ -224,7 +224,7 @@ empathy_tp_chat_add (EmpathyTpChat *self,
 
       /* Although this is a MUC, it's anonymous, so CreateChannel is
        * valid. */
-      tp_account_channel_request_create_and_observe_channel_async (req,
+      tp_account_channel_request_create_channel_async (req,
           EMPATHY_CHAT_BUS_NAME, NULL, create_conference_cb, NULL);
 
       g_object_unref (req);
@@ -390,7 +390,7 @@ handle_incoming_message (EmpathyTpChat *self,
       return;
     }
 
-  message_body = tp_message_to_text (message, NULL);
+  message_body = tp_message_to_text (message);
 
   DEBUG ("Message %s (channel %s): %s",
     pending ? "pending" : "received",
@@ -459,7 +459,7 @@ message_sent_cb (TpTextChannel *channel,
 {
   gchar *message_body;
 
-  message_body = tp_message_to_text (message, NULL);
+  message_body = tp_message_to_text (message);
 
   DEBUG ("Message sent: %s", message_body);
 
@@ -1093,7 +1093,7 @@ empathy_tp_chat_init (EmpathyTpChat *self)
 }
 
 EmpathyTpChat *
-empathy_tp_chat_new (TpSimpleClientFactory *factory,
+empathy_tp_chat_new (TpClientFactory *factory,
     TpConnection *conn,
     const gchar *object_path,
     const GHashTable *immutable_properties)
@@ -1157,7 +1157,7 @@ empathy_tp_chat_send (EmpathyTpChat *self,
   g_return_if_fail (EMPATHY_IS_TP_CHAT (self));
   g_return_if_fail (TP_IS_CLIENT_MESSAGE (message));
 
-  message_body = tp_message_to_text (message, NULL);
+  message_body = tp_message_to_text (message);
 
   DEBUG ("Sending message: %s", message_body);
 
@@ -1251,7 +1251,7 @@ empathy_tp_chat_is_invited (EmpathyTpChat *self,
   if (self_contact == NULL)
     return FALSE;
 
-  return tp_channel_group_get_local_pending_contact_info (channel,
+  return tp_channel_group_get_local_pending_info (channel,
       self_contact, inviter, NULL, NULL);
 }
 
@@ -1331,7 +1331,7 @@ continue_preparing (EmpathyTpChat *self)
       create_self_contact (self, contact);
 
       /* Get initial member contacts */
-      contacts = tp_channel_group_dup_members_contacts (channel);
+      contacts = tp_channel_group_dup_members (channel);
       add_members_contact (self, contacts);
       g_ptr_array_unref (contacts);
 

@@ -362,7 +362,7 @@ new_chatroom_dialog_select_last_account (GSettings *gsettings,
 {
   const gchar *account_path;
   TpAccountManager *manager;
-  TpSimpleClientFactory *factory;
+  TpClientFactory *factory;
   TpAccount *account;
   TpConnectionStatus status;
 
@@ -372,7 +372,7 @@ new_chatroom_dialog_select_last_account (GSettings *gsettings,
 
   manager =  tp_account_manager_dup ();
   factory = tp_proxy_get_factory (manager);
-  account = tp_simple_client_factory_ensure_account (factory, account_path,
+  account = tp_client_factory_ensure_account (factory, account_path,
       NULL, NULL);
 
   if (account != NULL)

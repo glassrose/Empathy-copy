@@ -348,8 +348,8 @@ empathy_message_from_tpl_log_event (TplEvent *logevent)
 	 * If the way EmpathyContact stores the avatar is changes, it might not be
 	 * needed anymore any TpAccount passing and the following call will be
 	 * useless */
-	account = tp_simple_client_factory_ensure_account (
-			TP_SIMPLE_CLIENT_FACTORY (factory),
+	account = tp_client_factory_ensure_account (
+			TP_CLIENT_FACTORY (factory),
 			tpl_event_get_account_path (logevent), NULL, NULL);
 	g_object_unref (factory);
 
@@ -681,7 +681,7 @@ empathy_message_new_from_tp_message (TpMessage *tp_msg,
 
 	g_return_val_if_fail (TP_IS_MESSAGE (tp_msg), NULL);
 
-	body = tp_message_to_text (tp_msg, NULL);
+	body = tp_message_to_text (tp_msg);
 
 	timestamp = tp_message_get_sent_timestamp (tp_msg);
 	if (timestamp == 0)

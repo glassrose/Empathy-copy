@@ -610,8 +610,8 @@ preferences_preview_theme_changed_cb (EmpathyThemeManager *manager,
 	 * conversation */
 	factory = empathy_client_factory_dup ();
 
-	account = tp_simple_client_factory_ensure_account (
-		TP_SIMPLE_CLIENT_FACTORY (factory),
+	account = tp_client_factory_ensure_account (
+		TP_CLIENT_FACTORY (factory),
 		TP_ACCOUNT_OBJECT_PATH_BASE "cm/jabber/account", NULL, NULL);
 	juliet = g_object_new (EMPATHY_TYPE_CONTACT,
 		"account", account,

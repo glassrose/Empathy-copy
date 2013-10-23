@@ -784,7 +784,7 @@ get_cm_display_name (EmpathyDebugWindow *self,
   GList *accounts, *ptr;
   char *retval;
 
-  accounts = tp_account_manager_dup_valid_accounts (self->priv->am);
+  accounts = tp_account_manager_dup_usable_accounts (self->priv->am);
 
   for (ptr = accounts; ptr != NULL; ptr = ptr->next)
     {

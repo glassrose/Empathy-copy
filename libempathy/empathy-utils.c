@@ -101,7 +101,7 @@ empathy_init (void)
   initialized = TRUE;
 
   factory = empathy_client_factory_dup ();
-  am = tp_account_manager_new_with_factory (TP_SIMPLE_CLIENT_FACTORY (factory));
+  am = tp_account_manager_new_with_factory (TP_CLIENT_FACTORY (factory));
   tp_account_manager_set_default (am);
 
   g_object_unref (factory);
@@ -419,7 +419,7 @@ empathy_account_manager_get_accounts_connected (gboolean *connecting)
           TP_ACCOUNT_MANAGER_FEATURE_CORE)))
     g_critical (G_STRLOC ": %s called before AccountManager ready", G_STRFUNC);
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
 
   for (l = accounts; l != NULL; l = l->next)
     {

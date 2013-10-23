@@ -432,7 +432,7 @@ account_manager_prepared_cb (GObject *source_object,
 		return;
 	}
 
-	list = tp_account_manager_dup_valid_accounts (account_manager);
+	list = tp_account_manager_dup_usable_accounts (account_manager);
 	for (l = list; l != NULL; l = l->next) {
 		tp_g_signal_connect_object (l->data, "status-changed",
 					     G_CALLBACK (status_icon_status_changed_cb),

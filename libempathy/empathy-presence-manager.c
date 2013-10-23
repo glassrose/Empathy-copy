@@ -425,7 +425,7 @@ account_manager_ready_cb (GObject *source_object,
   most_available_presence_changed (account_manager, state, status,
     status_message, self);
 
-  accounts = tp_account_manager_dup_valid_accounts (self->priv->manager);
+  accounts = tp_account_manager_dup_usable_accounts (self->priv->manager);
   for (l = accounts; l != NULL; l = l->next)
     {
       tp_g_signal_connect_object (l->data, "status-changed",

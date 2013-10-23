@@ -119,7 +119,7 @@ import_widget_add_accounts_to_model (EmpathyImportWidget *self)
 
       value = g_hash_table_lookup (data->settings, "account");
 
-      accounts = tp_account_manager_dup_valid_accounts (manager);
+      accounts = tp_account_manager_dup_usable_accounts (manager);
 
       /* Only set the "Import" cell to be active if there isn't already an
        * account set up with the same account id. */

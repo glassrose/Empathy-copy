@@ -427,7 +427,7 @@ can_add_contact (EmpathyRosterWindow *self)
   GList *accounts, *l;
   gboolean result = FALSE;
 
-  accounts = tp_account_manager_dup_valid_accounts (
+  accounts = tp_account_manager_dup_usable_accounts (
       self->priv->account_manager);
   for (l = accounts; l != NULL && !result; l = g_list_next (l))
     {
@@ -1288,8 +1288,8 @@ roster_window_join_chatroom_menu_activate_cb (GSimpleAction *action,
 
   factory = empathy_client_factory_dup ();
 
-  account = tp_simple_client_factory_ensure_account (
-      TP_SIMPLE_CLIENT_FACTORY (factory), path, NULL, &error);
+  account = tp_client_factory_ensure_account (
+      TP_CLIENT_FACTORY (factory), path, NULL, &error);
   if (account == NULL)
     {
       DEBUG ("Failed to get account '%s': %s", path, error->message);
@@ -1680,7 +1680,7 @@ set_notebook_page (EmpathyRosterWindow *self)
 
   gtk_spinner_stop (GTK_SPINNER (self->priv->spinner_loading));
 
-  accounts = tp_account_manager_dup_valid_accounts (
+  accounts = tp_account_manager_dup_usable_accounts (
       self->priv->account_manager);
 
   len = g_list_length (accounts);
@@ -1742,12 +1742,12 @@ out:
 }
 
 static void
-roster_window_account_validity_changed_cb (TpAccountManager  *manager,
+roster_window_account_usability_changed_cb (TpAccountManager  *manager,
     TpAccount *account,
-    gboolean valid,
+    gboolean usable,
     EmpathyRosterWindow *self)
 {
-  if (valid)
+  if (usable)
     add_account (self, account);
   else
     roster_window_account_removed_cb (manager, account, self);
@@ -1822,7 +1822,7 @@ account_manager_prepared_cb (GObject *source_object,
       return;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (
+  accounts = tp_account_manager_dup_usable_accounts (
       self->priv->account_manager);
   for (j = accounts; j != NULL; j = j->next)
     {
@@ -1831,8 +1831,8 @@ account_manager_prepared_cb (GObject *source_object,
       add_account (self, account);
     }
 
-  g_signal_connect (manager, "account-validity-changed",
-      G_CALLBACK (roster_window_account_validity_changed_cb), self);
+  g_signal_connect (manager, "account-usability-changed",
+      G_CALLBACK (roster_window_account_usability_changed_cb), self);
   tp_g_signal_connect_object (manager, "account-removed",
       G_CALLBACK (account_removed_cb), self, 0);
   tp_g_signal_connect_object (manager, "account-disabled",
@@ -2460,8 +2460,8 @@ empathy_roster_window_init (EmpathyRosterWindow *self)
   tp_g_signal_connect_object (self->priv->event_manager, "event-removed",
       G_CALLBACK (roster_window_event_removed_cb), self, 0);
 
-  g_signal_connect (self->priv->account_manager, "account-validity-changed",
-      G_CALLBACK (roster_window_account_validity_changed_cb), self);
+  g_signal_connect (self->priv->account_manager, "account-usability-changed",
+      G_CALLBACK (roster_window_account_usability_changed_cb), self);
   g_signal_connect (self->priv->account_manager, "account-removed",
       G_CALLBACK (roster_window_account_removed_cb), self);
   g_signal_connect (self->priv->account_manager, "account-disabled",

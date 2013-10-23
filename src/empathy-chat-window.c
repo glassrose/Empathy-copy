@@ -2209,8 +2209,8 @@ chat_window_drag_data_received (GtkWidget *widget,
           account_id = strv[0];
           contact_id = strv[1];
 
-          account = tp_simple_client_factory_ensure_account (
-              TP_SIMPLE_CLIENT_FACTORY (factory), account_id, NULL, NULL);
+          account = tp_client_factory_ensure_account (
+              TP_CLIENT_FACTORY (factory), account_id, NULL, NULL);
 
           g_object_unref (factory);
           if (account != NULL)

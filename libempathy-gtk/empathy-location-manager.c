@@ -179,7 +179,7 @@ publish_to_all_am_prepared_cb (GObject *source_object,
       goto out;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (manager);
+  accounts = tp_account_manager_dup_usable_accounts (manager);
   for (l = accounts; l; l = l->next)
     {
       TpConnection *conn = tp_account_get_connection (TP_ACCOUNT (l->data));
@@ -384,7 +384,7 @@ account_manager_prepared_cb (GObject *source_object,
       return;
     }
 
-  accounts = tp_account_manager_dup_valid_accounts (account_manager);
+  accounts = tp_account_manager_dup_usable_accounts (account_manager);
   for (l = accounts; l != NULL; l = l->next)
     {
       TpAccount *account = TP_ACCOUNT (l->data);

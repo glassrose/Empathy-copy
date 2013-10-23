@@ -269,8 +269,8 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 
   factory = empathy_client_factory_dup ();
 
-  account = tp_simple_client_factory_ensure_account (
-          TP_SIMPLE_CLIENT_FACTORY (factory), account_id, NULL, &error);
+  account = tp_client_factory_ensure_account (
+          TP_CLIENT_FACTORY (factory), account_id, NULL, &error);
   g_object_unref (factory);
 
   if (account == NULL)

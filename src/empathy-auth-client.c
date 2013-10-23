@@ -279,7 +279,7 @@ main (int argc,
   GError *error = NULL;
   EmpathyAuthFactory *factory;
   TpDebugSender *debug_sender;
-  TpSimpleClientFactory *tp_factory;
+  TpClientFactory *tp_factory;
   TpDBusDaemon *dbus;
 
   context = g_option_context_new (N_(" - Empathy authentication client"));
@@ -316,8 +316,8 @@ main (int argc,
 #endif
 
   dbus = tp_dbus_daemon_dup (NULL);
-  tp_factory = tp_simple_client_factory_new (dbus);
-  tp_simple_client_factory_add_account_features_varargs (tp_factory,
+  tp_factory = tp_client_factory_new (dbus);
+  tp_client_factory_add_account_features_varargs (tp_factory,
       TP_ACCOUNT_FEATURE_STORAGE,
       0);
 

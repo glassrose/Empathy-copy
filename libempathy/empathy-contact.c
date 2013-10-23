@@ -761,11 +761,11 @@ empathy_contact_from_tpl_contact (TpAccount *account,
       conn = tp_account_get_connection (account);
       if (conn != NULL)
         {
-          TpContactFeature features[] = { TP_CONTACT_FEATURE_CAPABILITIES };
+          GQuark features[] = { TP_CONTACT_FEATURE_CAPABILITIES, 0 };
           conn = tp_account_get_connection (account);
 
           tp_connection_dup_contact_by_id_async (conn, id,
-              G_N_ELEMENTS (features), features, get_contacts_cb,
+              features, get_contacts_cb,
               tp_weak_ref_new (retval, NULL, NULL));
         }
     }

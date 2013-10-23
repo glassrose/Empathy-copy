@@ -2501,7 +2501,7 @@ log_window_who_populate (EmpathyLogWindow *self)
       GList *accounts, *l;
 
       manager = empathy_account_chooser_get_account_manager (account_chooser);
-      accounts = tp_account_manager_dup_valid_accounts (manager);
+      accounts = tp_account_manager_dup_usable_accounts (manager);
 
       for (l = accounts; l != NULL; l = l->next)
         {

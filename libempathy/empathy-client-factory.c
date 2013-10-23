@@ -31,11 +31,11 @@
 G_DEFINE_TYPE (EmpathyClientFactory, empathy_client_factory,
     TP_TYPE_AUTOMATIC_CLIENT_FACTORY)
 
-#define chainup ((TpSimpleClientFactoryClass *) \
+#define chainup ((TpClientFactoryClass *) \
     empathy_client_factory_parent_class)
 
 static TpChannel *
-empathy_client_factory_create_channel (TpSimpleClientFactory *factory,
+empathy_client_factory_create_channel (TpClientFactory *factory,
     TpConnection *conn,
     const gchar *path,
     const GHashTable *properties,
@@ -48,7 +48,7 @@ empathy_client_factory_create_channel (TpSimpleClientFactory *factory,
   if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_TEXT))
     {
       return TP_CHANNEL (empathy_tp_chat_new (
-            TP_SIMPLE_CLIENT_FACTORY (factory), conn, path,
+            TP_CLIENT_FACTORY (factory), conn, path,
             properties));
     }
 
@@ -56,7 +56,7 @@ empathy_client_factory_create_channel (TpSimpleClientFactory *factory,
 }
 
 static GArray *
-empathy_client_factory_dup_channel_features (TpSimpleClientFactory *factory,
+empathy_client_factory_dup_channel_features (TpClientFactory *factory,
     TpChannel *channel)
 {
   GArray *features;
@@ -64,7 +64,7 @@ empathy_client_factory_dup_channel_features (TpSimpleClientFactory *factory,
 
   features = chainup->dup_channel_features (factory, channel);
 
-  feature = TP_CHANNEL_FEATURE_CONTACTS;
+  feature = TP_CHANNEL_FEATURE_GROUP;
   g_array_append_val (features, feature);
 
   if (EMPATHY_IS_TP_CHAT (channel))
@@ -80,7 +80,7 @@ empathy_client_factory_dup_channel_features (TpSimpleClientFactory *factory,
 }
 
 static GArray *
-empathy_client_factory_dup_account_features (TpSimpleClientFactory *factory,
+empathy_client_factory_dup_account_features (TpClientFactory *factory,
     TpAccount *account)
 {
   GArray *features;
@@ -101,7 +101,7 @@ empathy_client_factory_dup_account_features (TpSimpleClientFactory *factory,
 }
 
 static GArray *
-empathy_client_factory_dup_connection_features (TpSimpleClientFactory *factory,
+empathy_client_factory_dup_connection_features (TpClientFactory *factory,
     TpConnection *connection)
 {
   GArray *features;
@@ -134,27 +134,40 @@ empathy_client_factory_dup_connection_features (TpSimpleClientFactory *factory,
 }
 
 static GArray *
-empathy_client_factory_dup_contact_features (TpSimpleClientFactory *factory,
+empathy_client_factory_dup_contact_features (TpClientFactory *factory,
         TpConnection *connection)
 {
   GArray *features;
-  TpContactFeature extra_features[] = {
-      TP_CONTACT_FEATURE_ALIAS,
-      TP_CONTACT_FEATURE_PRESENCE,
-      TP_CONTACT_FEATURE_AVATAR_TOKEN,
-      TP_CONTACT_FEATURE_AVATAR_DATA,
-      TP_CONTACT_FEATURE_CAPABILITIES,
-      /* Needed by empathy_individual_add_menu_item_new to check if a contact
-       * is already in the contact list. This feature is pretty cheap to
-       * prepare as it doesn't prepare the full roster. */
-      TP_CONTACT_FEATURE_SUBSCRIPTION_STATES,
-      TP_CONTACT_FEATURE_CONTACT_GROUPS,
-      TP_CONTACT_FEATURE_CLIENT_TYPES,
-  };
+  GQuark feature;
 
   features = chainup->dup_contact_features (factory, connection);
 
-  g_array_append_vals (features, extra_features, G_N_ELEMENTS (extra_features));
+  feature = TP_CONTACT_FEATURE_ALIAS,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_PRESENCE,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_AVATAR_TOKEN,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_AVATAR_DATA,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_CAPABILITIES,
+  g_array_append_val (features, feature);
+
+  /* Needed by empathy_individual_add_menu_item_new to check if a contact
+   * is already in the contact list. This feature is pretty cheap to
+   * prepare as it doesn't prepare the full roster. */
+  feature = TP_CONTACT_FEATURE_SUBSCRIPTION_STATES,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_CONTACT_GROUPS,
+  g_array_append_val (features, feature);
+
+  feature = TP_CONTACT_FEATURE_CLIENT_TYPES,
+  g_array_append_val (features, feature);
 
   return features;
 }
@@ -162,7 +175,7 @@ empathy_client_factory_dup_contact_features (TpSimpleClientFactory *factory,
 static void
 empathy_client_factory_class_init (EmpathyClientFactoryClass *cls)
 {
-  TpSimpleClientFactoryClass *simple_class = (TpSimpleClientFactoryClass *) cls;
+  TpClientFactoryClass *simple_class = (TpClientFactoryClass *) cls;
 
   simple_class->create_channel = empathy_client_factory_create_channel;
   simple_class->dup_channel_features =
@@ -263,10 +276,10 @@ empathy_client_factory_dup_contact_by_id_async (
       empathy_client_factory_dup_contact_by_id_async);
 
   features = empathy_client_factory_dup_contact_features (
-      TP_SIMPLE_CLIENT_FACTORY (self), connection);
+      TP_CLIENT_FACTORY (self), connection);
 
-  tp_connection_dup_contact_by_id_async (connection, id, features->len,
-      (TpContactFeature * ) features->data, dup_contact_cb, result);
+  tp_connection_dup_contact_by_id_async (connection, id,
+      (const GQuark *) features->data, dup_contact_cb, result);
 
   g_array_unref (features);
 }
