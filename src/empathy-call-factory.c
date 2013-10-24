@@ -153,20 +153,16 @@ empathy_call_factory_initialise (void)
 {
   EmpathyCallFactory *self;
   EmpathyClientFactory *factory;
-  TpAccountManager *am;
 
   g_return_val_if_fail (call_factory == NULL, NULL);
 
-  am = tp_account_manager_dup ();
   factory = empathy_client_factory_dup ();
 
   self = EMPATHY_CALL_FACTORY (g_object_new (EMPATHY_TYPE_CALL_FACTORY,
-      "account-manager", am,
       "factory", factory,
       "name", EMPATHY_CALL_BUS_NAME_SUFFIX,
       NULL));
 
-  g_object_unref (am);
   g_object_unref (factory);
 
   return self;
