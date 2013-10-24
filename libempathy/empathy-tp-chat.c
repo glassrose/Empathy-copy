@@ -1429,6 +1429,16 @@ continue_preparing (EmpathyTpChat *self)
 }
 
 static void
+channel_group_prepared_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyTpChat *self = user_data;
+
+  continue_preparing (self);
+}
+
+static void
 conn_connected_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
@@ -1445,7 +1455,21 @@ conn_connected_cb (GObject *source,
       return;
     }
 
-  continue_preparing (self);
+  if (tp_proxy_has_interface_by_id (self,
+        TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+    {
+      /* If the channel is implementing Group, we need its feature prepared.
+       * We can't list it as a dependency on EMPATHY_TP_CHAT_FEATURE_READY as
+       * we still want to prepare the tp-chat feature on channel not
+       * implementing GROUP. */
+      GQuark features[] = { TP_CHANNEL_FEATURE_GROUP, 0 };
+
+      tp_proxy_prepare_async (self, features, channel_group_prepared_cb, self);
+    }
+  else
+    {
+      continue_preparing (self);
+    }
 }
 
 static void
