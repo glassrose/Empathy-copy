@@ -128,7 +128,7 @@ group_contacts_changed_cb (TpChannel *channel,
 }
 
 static void
-individual_store_channel_contact_chat_state_changed (TpTextChannel *channel,
+individual_store_channel_chat_state_changed (TpTextChannel *channel,
     TpContact *tp_contact,
     TpChannelChatState state,
     EmpathyIndividualStoreChannel *self)
@@ -212,8 +212,8 @@ individual_store_channel_set_individual_channel (
   tp_g_signal_connect_object (channel, "group-contacts-changed",
       G_CALLBACK (group_contacts_changed_cb), self, 0);
 
-  tp_g_signal_connect_object (channel, "contact-chat-state-changed",
-      G_CALLBACK (individual_store_channel_contact_chat_state_changed),
+  tp_g_signal_connect_object (channel, "chat-state-changed",
+      G_CALLBACK (individual_store_channel_chat_state_changed),
       self, 0);
 }
 

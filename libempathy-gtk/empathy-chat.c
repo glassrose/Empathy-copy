@@ -4146,7 +4146,7 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	g_signal_connect (tp_chat, "send-error",
 			  G_CALLBACK (chat_send_error_cb),
 			  chat);
-	g_signal_connect (tp_chat, "contact-chat-state-changed",
+	g_signal_connect (tp_chat, "chat-state-changed",
 			  G_CALLBACK (chat_state_changed_cb),
 			  chat);
 	g_signal_connect (tp_chat, "members-changed",
