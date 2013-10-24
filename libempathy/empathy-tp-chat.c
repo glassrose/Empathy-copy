@@ -829,7 +829,7 @@ contact_renamed (EmpathyTpChat *self,
 }
 
 static void
-tp_chat_group_contacts_changed_cb (TpChannel *channel,
+tp_chat_group_members_changed_cb (TpChannel *channel,
     GPtrArray *added,
     GPtrArray *removed,
     GPtrArray *local_pending,
@@ -1337,8 +1337,8 @@ continue_preparing (EmpathyTpChat *self)
 
       self->priv->can_upgrade_to_muc = FALSE;
 
-      tp_g_signal_connect_object (self, "group-contacts-changed",
-        G_CALLBACK (tp_chat_group_contacts_changed_cb), self, 0);
+      tp_g_signal_connect_object (self, "group-members-changed",
+        G_CALLBACK (tp_chat_group_members_changed_cb), self, 0);
     }
   else
     {

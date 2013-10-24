@@ -111,7 +111,7 @@ remove_members (EmpathyIndividualStoreChannel *self,
 }
 
 static void
-group_contacts_changed_cb (TpChannel *channel,
+group_members_changed_cb (TpChannel *channel,
     GPtrArray *added,
     GPtrArray *removed,
     GPtrArray *local_pending,
@@ -209,8 +209,8 @@ individual_store_channel_set_individual_channel (
       g_ptr_array_unref (members);
     }
 
-  tp_g_signal_connect_object (channel, "group-contacts-changed",
-      G_CALLBACK (group_contacts_changed_cb), self, 0);
+  tp_g_signal_connect_object (channel, "group-members-changed",
+      G_CALLBACK (group_members_changed_cb), self, 0);
 
   tp_g_signal_connect_object (channel, "chat-state-changed",
       G_CALLBACK (individual_store_channel_chat_state_changed),
