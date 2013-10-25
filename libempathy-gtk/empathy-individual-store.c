@@ -336,7 +336,7 @@ empathy_individual_store_add_individual (EmpathyIndividualStore *self,
           protocol_name = tp_connection_get_protocol_name (connection);
         }
 
-      if (!tp_strdiff (protocol_name, "local-xmpp"))
+      if (!tp_strdiff (protocol_name, "local_xmpp"))
         {
           /* these are People Nearby */
           individual_store_get_group (self,

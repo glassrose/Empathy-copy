@@ -484,7 +484,7 @@ out:
 static gchar *
 dup_plugin_name_for_protocol (const gchar *protocol)
 {
-  if (!tp_strdiff (protocol, "local-xmpp"))
+  if (!tp_strdiff (protocol, "local_xmpp"))
     return g_strdup ("account-plugin-salut");
 
   return g_strdup_printf ("account-plugin-%s", protocol);

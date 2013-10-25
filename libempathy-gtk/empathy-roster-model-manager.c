@@ -73,7 +73,7 @@ is_xmpp_local_contact (FolksIndividual *individual)
 
   connection = empathy_contact_get_connection (contact);
   protocol_name = tp_connection_get_protocol_name (connection);
-  result = !tp_strdiff (protocol_name, "local-xmpp");
+  result = !tp_strdiff (protocol_name, "local_xmpp");
   g_object_unref (contact);
 
   return result;

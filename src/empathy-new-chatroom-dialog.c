@@ -325,7 +325,7 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *self)
   /* hardcode here known protocols */
   if (strcmp (protocol, "jabber") == 0)
     gtk_widget_set_sensitive (self->priv->entry_server, TRUE);
-  else if (strcmp (protocol, "local-xmpp") == 0)
+  else if (strcmp (protocol, "local_xmpp") == 0)
     gtk_widget_set_sensitive (self->priv->entry_server, FALSE);
   else if (strcmp (protocol, "irc") == 0)
     gtk_widget_set_sensitive (self->priv->entry_server, FALSE);

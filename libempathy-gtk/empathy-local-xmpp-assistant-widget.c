@@ -98,7 +98,7 @@ empathy_local_xmpp_assistant_widget_constructed (GObject *object)
       g_object_unref (pix);
     }
 
-  self->priv->settings = tpaw_account_settings_new ("salut", "local-xmpp",
+  self->priv->settings = tpaw_account_settings_new ("salut", "local_xmpp",
       NULL, _("People nearby"));
 
   account_widget = tpaw_account_widget_new_for_protocol (
@@ -230,7 +230,7 @@ empathy_local_xmpp_assistant_widget_should_create_account (
     {
       TpAccount *account = TP_ACCOUNT (l->data);
 
-      if (!tp_strdiff (tp_account_get_protocol_name (account), "local-xmpp"))
+      if (!tp_strdiff (tp_account_get_protocol_name (account), "local_xmpp"))
         {
           salut_created = TRUE;
           break;

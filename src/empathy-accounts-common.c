@@ -42,7 +42,7 @@ empathy_accounts_has_non_salut_accounts (TpAccountManager *manager)
 
   for (l = accounts ; l != NULL; l = g_list_next (l))
     {
-      if (tp_strdiff (tp_account_get_protocol_name (l->data), "local-xmpp"))
+      if (tp_strdiff (tp_account_get_protocol_name (l->data), "local_xmpp"))
         {
           ret = TRUE;
           break;
