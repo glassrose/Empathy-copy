@@ -279,6 +279,8 @@ account_is_selected (EmpathyAccountsDialog *dialog,
     return FALSE;
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
+  if (selection == NULL)
+    return FALSE;
 
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return FALSE;
