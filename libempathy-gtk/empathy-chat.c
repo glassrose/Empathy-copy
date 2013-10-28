@@ -370,7 +370,7 @@ set_chat_state (EmpathyChat *self,
 	EmpathyChatPriv *priv = GET_PRIV (self);
 
 	if (!tp_proxy_has_interface_by_id (priv->tp_chat,
-		TP_IFACE_QUARK_CHANNEL_INTERFACE_CHAT_STATE))
+		TP_IFACE_QUARK_CHANNEL_INTERFACE_CHAT_STATE1))
 		return;
 
 	tp_text_channel_set_chat_state_async (TP_TEXT_CHANNEL (priv->tp_chat), state,
@@ -769,7 +769,7 @@ part_command_supported (EmpathyChat *chat)
 	EmpathyChatPriv * priv = GET_PRIV (chat);
 
 	return tp_proxy_has_interface_by_id (priv->tp_chat,
-			TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP);
+			TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP1);
 }
 
 static void
@@ -3450,7 +3450,7 @@ chat_constructed (GObject *object)
 		TpConnection *conn = tp_channel_get_connection (channel);
 		gboolean supports_avatars =
 			tp_proxy_has_interface_by_id (conn,
-						      TP_IFACE_QUARK_CONNECTION_INTERFACE_AVATARS);
+						      TP_IFACE_QUARK_CONNECTION_INTERFACE_AVATARS1);
 
 		empathy_theme_adium_set_show_avatars (chat->view,
 						    supports_avatars);

@@ -72,7 +72,7 @@ create_text_channel (TpAccount *account,
 
   if (sms_channel)
     tp_asv_set_boolean (request,
-        TP_PROP_CHANNEL_INTERFACE_SMS_SMS_CHANNEL, TRUE);
+        TP_PROP_CHANNEL_INTERFACE_SMS1_SMS_CHANNEL, TRUE);
 
   req = tp_account_channel_request_new (account, request, timestamp);
   tp_account_channel_request_set_delegate_to_preferred_handler (req, TRUE);

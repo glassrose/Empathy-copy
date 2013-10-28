@@ -795,7 +795,7 @@ empathy_individual_manager_supports_blocking (EmpathyIndividualManager *self,
               conn = tp_contact_get_connection (tp_contact);
 
               if (tp_proxy_has_interface_by_id (conn,
-                    TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING))
+                    TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1))
                 retval = TRUE;
             }
         }
@@ -835,7 +835,7 @@ empathy_individual_manager_set_blocked (EmpathyIndividualManager *self,
           conn = tp_contact_get_connection (tp_contact);
 
           if (!tp_proxy_has_interface_by_id (conn,
-                TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING))
+                TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1))
             goto while_next;
 
           if (blocked)

@@ -269,7 +269,7 @@ empathy_subscription_dialog_constructed (GObject *object)
   conn = empathy_contact_get_connection (contact);
 
   if (tp_proxy_has_interface_by_id (conn,
-        TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING))
+        TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1))
     {
       gtk_dialog_add_button (GTK_DIALOG (self),
           _("_Block"), GTK_RESPONSE_REJECT);

@@ -167,7 +167,7 @@ create_conference_cb (GObject *source,
       "InviteOnly", G_TYPE_BOOLEAN, TRUE,
       NULL);
 
-  tp_cli_channel_interface_room_config_call_update_configuration (channel, -1,
+  tp_cli_channel_interface_room_config1_call_update_configuration (channel, -1,
       props, update_config_cb, NULL, NULL, NULL);
 
   g_object_unref (channel);
@@ -182,7 +182,7 @@ empathy_tp_chat_add (EmpathyTpChat *self,
   TpChannel *channel = (TpChannel *) self;
 
   if (tp_proxy_has_interface_by_id (self,
-    TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+    TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP1))
     {
       TpHandle handle;
       GArray handles = {(gchar *) &handle, 1};
@@ -190,7 +190,7 @@ empathy_tp_chat_add (EmpathyTpChat *self,
       g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
       handle = empathy_contact_get_handle (contact);
-      tp_cli_channel_interface_group_call_add_members (channel,
+      tp_cli_channel_interface_group1_call_add_members (channel,
         -1, &handles, NULL, NULL, NULL, NULL, NULL);
     }
   else if (self->priv->can_upgrade_to_muc)
@@ -210,9 +210,9 @@ empathy_tp_chat_add (EmpathyTpChat *self,
               TP_IFACE_CHANNEL_TYPE_TEXT,
           TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
               TP_HANDLE_TYPE_NONE,
-          TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_CHANNELS,
+          TP_PROP_CHANNEL_INTERFACE_CONFERENCE1_INITIAL_CHANNELS,
               TP_ARRAY_TYPE_OBJECT_PATH_LIST, &channels,
-          TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS,
+          TP_PROP_CHANNEL_INTERFACE_CONFERENCE1_INITIAL_INVITEE_IDS,
               G_TYPE_STRV, invitees,
           /* FIXME: InvitationMessage ? */
           NULL);
@@ -635,10 +635,10 @@ tp_chat_dbus_properties_changed_cb (TpProxy *proxy,
 {
   EmpathyTpChat *self = EMPATHY_TP_CHAT (chat);
 
-  if (!tp_strdiff (interface_name, TP_IFACE_CHANNEL_INTERFACE_SUBJECT))
+  if (!tp_strdiff (interface_name, TP_IFACE_CHANNEL_INTERFACE_SUBJECT1))
     update_subject (self, changed);
 
-  if (!tp_strdiff (interface_name, TP_IFACE_CHANNEL_INTERFACE_ROOM_CONFIG))
+  if (!tp_strdiff (interface_name, TP_IFACE_CHANNEL_INTERFACE_ROOM_CONFIG1))
     update_title (self, changed);
 }
 
@@ -646,7 +646,7 @@ void
 empathy_tp_chat_set_subject (EmpathyTpChat *self,
     const gchar *subject)
 {
-  tp_cli_channel_interface_subject_call_set_subject (TP_CHANNEL (self), -1,
+  tp_cli_channel_interface_subject1_call_set_subject (TP_CHANNEL (self), -1,
       subject, tp_chat_async_cb, "while setting subject", NULL,
       G_OBJECT (self));
 }
@@ -1205,7 +1205,7 @@ empathy_tp_chat_can_add_contact (EmpathyTpChat *self)
 
   return self->priv->can_upgrade_to_muc ||
     tp_proxy_has_interface_by_id (self,
-      TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP);;
+      TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP1);;
 }
 
 static void
@@ -1243,7 +1243,7 @@ empathy_tp_chat_is_invited (EmpathyTpChat *self,
   TpContact *self_contact;
   TpChannel *channel = TP_CHANNEL (self);
 
-  if (!tp_proxy_has_interface (self, TP_IFACE_CHANNEL_INTERFACE_GROUP))
+  if (!tp_proxy_has_interface (self, TP_IFACE_CHANNEL_INTERFACE_GROUP1))
     return FALSE;
 
   self_contact = tp_channel_group_get_self_contact (channel);
@@ -1305,7 +1305,7 @@ continue_preparing (EmpathyTpChat *self)
   connection = tp_channel_get_connection (channel);
 
   if (tp_proxy_has_interface_by_id (self,
-        TP_IFACE_QUARK_CHANNEL_INTERFACE_PASSWORD))
+        TP_IFACE_QUARK_CHANNEL_INTERFACE_PASSWORD1))
     {
       /* The password feature can't be a hard dep on our own feature has we
        * depend on it only if the channel implements the
@@ -1320,7 +1320,7 @@ continue_preparing (EmpathyTpChat *self)
     }
 
   if (tp_proxy_has_interface_by_id (self,
-            TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+            TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP1))
     {
       GPtrArray *contacts;
       TpContact *contact;
@@ -1377,7 +1377,7 @@ continue_preparing (EmpathyTpChat *self)
               oprops = g_variant_get_strv (allowed, NULL);
 
               if (tp_strv_contains (oprops,
-                    TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_CHANNELS))
+                    TP_PROP_CHANNEL_INTERFACE_CONFERENCE1_INITIAL_CHANNELS))
                 {
                   self->priv->can_upgrade_to_muc = TRUE;
                 }
@@ -1397,10 +1397,10 @@ continue_preparing (EmpathyTpChat *self)
     }
 
   if (tp_proxy_has_interface_by_id (self,
-            TP_IFACE_QUARK_CHANNEL_INTERFACE_SUBJECT))
+            TP_IFACE_QUARK_CHANNEL_INTERFACE_SUBJECT1))
     {
       tp_cli_dbus_properties_call_get_all (channel, -1,
-                   TP_IFACE_CHANNEL_INTERFACE_SUBJECT,
+                   TP_IFACE_CHANNEL_INTERFACE_SUBJECT1,
                    tp_chat_get_all_subject_cb,
                    NULL, NULL,
                    G_OBJECT (self));
@@ -1408,10 +1408,10 @@ continue_preparing (EmpathyTpChat *self)
     }
 
   if (tp_proxy_has_interface_by_id (self,
-            TP_IFACE_QUARK_CHANNEL_INTERFACE_ROOM_CONFIG))
+            TP_IFACE_QUARK_CHANNEL_INTERFACE_ROOM_CONFIG1))
     {
       tp_cli_dbus_properties_call_get_all (channel, -1,
-                   TP_IFACE_CHANNEL_INTERFACE_ROOM_CONFIG,
+                   TP_IFACE_CHANNEL_INTERFACE_ROOM_CONFIG1,
                    tp_chat_get_all_room_config_cb,
                    NULL, NULL,
                    G_OBJECT (self));
@@ -1455,7 +1455,7 @@ conn_connected_cb (GObject *source,
     }
 
   if (tp_proxy_has_interface_by_id (self,
-        TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+        TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP1))
     {
       /* If the channel is implementing Group, we need its feature prepared.
        * We can't list it as a dependency on EMPATHY_TP_CHAT_FEATURE_READY as

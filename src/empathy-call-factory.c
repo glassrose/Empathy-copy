@@ -66,32 +66,32 @@ empathy_call_factory_init (EmpathyCallFactory *obj)
 
   tp_base_client_take_approver_filter (client, tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE,
           G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
         NULL));
 
   tp_base_client_take_handler_filter (client, tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE,
           G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
         NULL));
 
   tp_base_client_take_handler_filter (client, tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE,
           G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
-        TP_PROP_CHANNEL_TYPE_CALL_INITIAL_AUDIO, G_TYPE_BOOLEAN, TRUE,
+        TP_PROP_CHANNEL_TYPE_CALL1_INITIAL_AUDIO, G_TYPE_BOOLEAN, TRUE,
         NULL));
 
   tp_base_client_take_handler_filter (client, tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE,
           G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
-        TP_PROP_CHANNEL_TYPE_CALL_INITIAL_VIDEO, G_TYPE_BOOLEAN, TRUE,
+        TP_PROP_CHANNEL_TYPE_CALL1_INITIAL_VIDEO, G_TYPE_BOOLEAN, TRUE,
         NULL));
 
   tp_base_client_add_handler_capabilities_varargs (client,
@@ -200,7 +200,7 @@ handle_channels (TpBaseClient *client,
         continue;
 
       if (tp_channel_get_channel_type_id (channel) !=
-          TP_IFACE_QUARK_CHANNEL_TYPE_CALL)
+          TP_IFACE_QUARK_CHANNEL_TYPE_CALL1)
         continue;
 
       if (!TP_IS_CALL_CHANNEL (channel))
@@ -237,7 +237,7 @@ find_call_channel (GList *channels)
 
       channel_type = tp_channel_get_channel_type_id (channel);
 
-      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL)
+      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL1)
         return TP_CALL_CHANNEL (channel);
     }
 

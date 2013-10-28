@@ -78,7 +78,7 @@ sasl_status_changed_cb (TpChannel *channel,
   switch (status)
     {
       case TP_SASL_STATUS_SERVER_SUCCEEDED:
-        tp_cli_channel_interface_sasl_authentication_call_accept_sasl (channel,
+        tp_cli_channel_interface_sasl_authentication1_call_accept_sasl (channel,
             -1, generic_cb, g_object_ref (result), g_object_unref, NULL);
         break;
 
@@ -118,12 +118,12 @@ empathy_sasl_auth_common_async (TpChannel *channel,
 
   g_return_val_if_fail (TP_IS_CHANNEL (channel), NULL);
   g_return_val_if_fail (tp_proxy_has_interface_by_id (channel,
-      TP_IFACE_QUARK_CHANNEL_INTERFACE_SASL_AUTHENTICATION), NULL);
+      TP_IFACE_QUARK_CHANNEL_INTERFACE_SASL_AUTHENTICATION1), NULL);
 
   result = g_simple_async_result_new ((GObject *) channel,
       callback, user_data, empathy_sasl_auth_common_async);
 
-  tp_cli_channel_interface_sasl_authentication_connect_to_sasl_status_changed (
+  tp_cli_channel_interface_sasl_authentication1_connect_to_sasl_status_changed (
       channel, sasl_status_changed_cb,
       g_object_ref (result), g_object_unref, NULL, &error);
   g_assert_no_error (error);
@@ -181,7 +181,7 @@ facebook_new_challenge_cb (TpChannel *channel,
   response_array = g_array_new (FALSE, FALSE, sizeof (gchar));
   g_array_append_vals (response_array, response, strlen (response));
 
-  tp_cli_channel_interface_sasl_authentication_call_respond (data->channel, -1,
+  tp_cli_channel_interface_sasl_authentication1_call_respond (data->channel, -1,
       response_array, generic_cb, g_object_ref (result), g_object_unref, NULL);
 
   g_hash_table_unref (h);
@@ -219,13 +219,13 @@ empathy_sasl_auth_facebook_async (TpChannel *channel,
   g_simple_async_result_set_op_res_gpointer (result, data,
       (GDestroyNotify) facebook_data_free);
 
-  tp_cli_channel_interface_sasl_authentication_connect_to_new_challenge (
+  tp_cli_channel_interface_sasl_authentication1_connect_to_new_challenge (
       channel, facebook_new_challenge_cb,
       g_object_ref (result), g_object_unref,
       NULL, &error);
   g_assert_no_error (error);
 
-  tp_cli_channel_interface_sasl_authentication_call_start_mechanism (
+  tp_cli_channel_interface_sasl_authentication1_call_start_mechanism (
       channel, -1, MECH_FACEBOOK, generic_cb,
       g_object_ref (result), g_object_unref, NULL);
 
@@ -258,7 +258,7 @@ empathy_sasl_auth_wlm_async (TpChannel *channel,
   token_decoded_array = g_array_new (FALSE, FALSE, sizeof (guchar));
   g_array_append_vals (token_decoded_array, token_decoded, token_decoded_len);
 
-  tp_cli_channel_interface_sasl_authentication_call_start_mechanism_with_data (
+  tp_cli_channel_interface_sasl_authentication1_call_start_mechanism_with_data (
       channel, -1, MECH_WLM, token_decoded_array,
       generic_cb, g_object_ref (result), g_object_unref, NULL);
 
@@ -295,7 +295,7 @@ empathy_sasl_auth_google_async (TpChannel *channel,
   g_array_append_val (credential, "\0");
   g_array_append_vals (credential, access_token, strlen (access_token));
 
-  tp_cli_channel_interface_sasl_authentication_call_start_mechanism_with_data (
+  tp_cli_channel_interface_sasl_authentication1_call_start_mechanism_with_data (
       channel, -1, MECH_GOOGLE, credential,
       generic_cb, g_object_ref (result), g_object_unref, NULL);
 
@@ -325,7 +325,7 @@ empathy_sasl_auth_password_async (TpChannel *channel,
       strlen (password));
   g_array_append_vals (password_array, password, strlen (password));
 
-  tp_cli_channel_interface_sasl_authentication_call_start_mechanism_with_data (
+  tp_cli_channel_interface_sasl_authentication1_call_start_mechanism_with_data (
       channel, -1, MECH_PASSWORD, password_array,
       generic_cb, g_object_ref (result), g_object_unref, NULL);
 
@@ -352,7 +352,7 @@ empathy_sasl_channel_supports_mechanism (TpChannel *channel,
   props = tp_channel_dup_immutable_properties (channel);
 
   g_variant_lookup (props,
-      TP_PROP_CHANNEL_INTERFACE_SASL_AUTHENTICATION_AVAILABLE_MECHANISMS,
+      TP_PROP_CHANNEL_INTERFACE_SASL_AUTHENTICATION1_AVAILABLE_MECHANISMS,
       "^as", &available_mechanisms);
 
   result = tp_strv_contains ((const gchar * const *) available_mechanisms,

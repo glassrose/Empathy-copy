@@ -147,7 +147,7 @@ find_main_channel (GList *channels)
 
       channel_type = tp_channel_get_channel_type_id (channel);
 
-      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL)
+      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL1)
         return channel;
     }
 
@@ -165,7 +165,7 @@ has_ongoing_calls (EmpathyCallObserver *self)
       GQuark type = tp_channel_get_channel_type_id (channel);
 
       /* Check that Call channels are not ended */
-      if (type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL &&
+      if (type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL1 &&
           tp_call_channel_get_state (TP_CALL_CHANNEL (channel),
               NULL, NULL, NULL) == TP_CALL_STATE_ENDED)
         continue;
@@ -327,7 +327,7 @@ empathy_call_observer_init (EmpathyCallObserver *self)
   tp_base_client_take_observer_filter (self->priv->observer,
       tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
           TP_HANDLE_TYPE_CONTACT,
         NULL));

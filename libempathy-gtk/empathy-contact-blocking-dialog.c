@@ -93,7 +93,7 @@ contact_blocking_dialog_filter_account_chooser (TpAccount *account,
   enable =
     conn != NULL &&
     tp_proxy_has_interface_by_id (conn,
-      TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING);
+      TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1);
 
   callback (enable, callback_data);
 }
@@ -122,7 +122,7 @@ contact_blocking_dialog_refilter_account_chooser (
   enabled = (empathy_account_chooser_get_account (chooser) != NULL &&
              conn != NULL &&
              tp_proxy_has_interface_by_id (conn,
-               TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING));
+               TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1));
 
   if (!enabled)
     DEBUG ("No account selected");

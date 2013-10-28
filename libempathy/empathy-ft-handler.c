@@ -861,20 +861,20 @@ ft_handler_populate_outgoing_request (EmpathyFTHandler *handler)
 
   priv->request = tp_asv_new (
       TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-        TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+        TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER1,
       TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
         TP_HANDLE_TYPE_CONTACT,
       TP_PROP_CHANNEL_TARGET_HANDLE, G_TYPE_UINT,
         contact_handle,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_TYPE, G_TYPE_STRING,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_CONTENT_TYPE, G_TYPE_STRING,
         priv->content_type,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_FILENAME, G_TYPE_STRING,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_FILENAME, G_TYPE_STRING,
         priv->filename,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_SIZE, G_TYPE_UINT64,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_SIZE, G_TYPE_UINT64,
         priv->total_bytes,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_DATE, G_TYPE_UINT64,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_DATE, G_TYPE_UINT64,
         priv->mtime,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_URI, G_TYPE_STRING, uri,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_URI, G_TYPE_STRING, uri,
       NULL);
 
   g_free (uri);
@@ -928,7 +928,7 @@ hash_job_done (gpointer user_data)
        * im.telepathy1.Channel.Type.FileTransfer.ContentHash
        */
       tp_asv_set_string (priv->request,
-          TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH,
+          TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_CONTENT_HASH,
           g_checksum_get_string (hash_data->checksum));
     }
 
@@ -1068,7 +1068,7 @@ ft_handler_read_async_cb (GObject *source,
   hash_data->checksum = g_checksum_new (G_CHECKSUM_MD5);
 
   tp_asv_set_uint32 (priv->request,
-      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH_TYPE,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_CONTENT_HASH_TYPE,
       TP_FILE_HASH_TYPE_MD5);
 
   g_signal_emit (handler, signals[HASHING_STARTED], 0);
@@ -1112,7 +1112,7 @@ set_content_hash_type_from_classes (EmpathyFTHandler *handler,
 
       chan_type = tp_asv_get_string (fixed, TP_PROP_CHANNEL_CHANNEL_TYPE);
 
-      if (tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+      if (tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER1))
         continue;
 
       if (tp_asv_get_uint32 (fixed, TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, NULL) !=
@@ -1122,7 +1122,7 @@ set_content_hash_type_from_classes (EmpathyFTHandler *handler,
       support_ft = TRUE;
 
       value = tp_asv_get_uint32
-        (fixed, TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH_TYPE,
+        (fixed, TP_PROP_CHANNEL_TYPE_FILE_TRANSFER1_CONTENT_HASH_TYPE,
          &valid);
 
       if (valid)
@@ -1426,7 +1426,7 @@ empathy_ft_handler_new_incoming (TpFileTransferChannel *channel,
       channel));
 
   tp_cli_dbus_properties_call_get_all (channel,
-      -1, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+      -1, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER1,
       channel_get_all_properties_cb, data, NULL, G_OBJECT (handler));
 }
 

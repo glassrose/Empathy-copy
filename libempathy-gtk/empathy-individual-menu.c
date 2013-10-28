@@ -535,7 +535,7 @@ get_contacts_supporting_blocking (FolksIndividual *individual)
       conn = tp_contact_get_connection (contact);
 
       if (tp_proxy_has_interface_by_id (conn,
-        TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING))
+        TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_BLOCKING1))
         result = g_list_prepend (result, contact);
 
 while_next:

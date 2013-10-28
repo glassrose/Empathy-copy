@@ -115,13 +115,13 @@ tls_handler_init_async (GAsyncInitable *initable,
   properties = tp_channel_dup_immutable_properties (priv->channel);
 
   g_variant_lookup (properties,
-      TP_PROP_CHANNEL_TYPE_SERVER_TLS_CONNECTION_HOSTNAME,
+      TP_PROP_CHANNEL_TYPE_SERVER_TLS_CONNECTION1_HOSTNAME,
       "s", &priv->hostname);
 
   DEBUG ("Received hostname: %s", priv->hostname);
 
   g_variant_lookup (properties,
-      TP_PROP_CHANNEL_TYPE_SERVER_TLS_CONNECTION_REFERENCE_IDENTITIES,
+      TP_PROP_CHANNEL_TYPE_SERVER_TLS_CONNECTION1_REFERENCE_IDENTITIES,
       "^as", &priv->reference_identities);
 
   /*
@@ -144,7 +144,7 @@ tls_handler_init_async (GAsyncInitable *initable,
   }
 
   g_variant_lookup (properties,
-      TP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION ".ServerCertificate",
+      TP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION1 ".ServerCertificate",
       "&o", &cert_object_path);
   bus_name = tp_proxy_get_bus_name (TP_PROXY (priv->channel));
 

@@ -438,7 +438,7 @@ reject_approval (EventManagerApproval *approval)
           g_object_ref (approval->handler_instance));
     }
   else if (tp_channel_get_channel_type_id (approval->main_channel)
-      == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION)
+      == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1)
     {
       tp_channel_dispatch_operation_close_channels_async (approval->operation,
           NULL, NULL);
@@ -612,7 +612,7 @@ event_manager_approval_done (EventManagerApproval *approval)
 
       channel_type = tp_channel_get_channel_type_id (approval->main_channel);
 
-      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL)
+      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL1)
         {
           priv->ringing--;
           if (priv->ringing == 0)
@@ -796,9 +796,9 @@ find_main_channel (GList *channels)
 
       channel_type = tp_channel_get_channel_type_id (channel);
 
-      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL ||
-          channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER ||
-          channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION)
+      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_CALL1 ||
+          channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER1 ||
+          channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1)
         return channel;
 
       else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
@@ -818,7 +818,7 @@ approve_text_channel (EmpathyEventManager *self,
 
   approval->handler_instance = g_object_ref (tp_chat);
 
-  if (tp_proxy_has_interface (tp_chat, TP_IFACE_CHANNEL_INTERFACE_GROUP))
+  if (tp_proxy_has_interface (tp_chat, TP_IFACE_CHANNEL_INTERFACE_GROUP1))
     {
       /* Are we in local-pending ? */
       TpContact *inviter;
@@ -1037,7 +1037,7 @@ approve_channels (TpSimpleApprover *approver,
       approve_ft_channel (self, approval, context,
           TP_FILE_TRANSFER_CHANNEL (channel));
     }
-  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION)
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1)
     {
       approve_sasl_channel (self, account, approval, context, channel);
     }
@@ -1398,7 +1398,7 @@ empathy_event_manager_init (EmpathyEventManager *manager)
   tp_base_client_take_approver_filter (priv->approver,
       tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+          TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
         NULL));
 
@@ -1406,7 +1406,7 @@ empathy_event_manager_init (EmpathyEventManager *manager)
   tp_base_client_take_approver_filter (priv->approver,
       tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_CALL,
+          TP_IFACE_CHANNEL_TYPE_CALL1,
         TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
         NULL));
 
@@ -1427,10 +1427,10 @@ empathy_event_manager_init (EmpathyEventManager *manager)
   tp_base_client_take_approver_filter (priv->auth_approver,
       tp_asv_new (
         TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION,
-        TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION_AUTHENTICATION_METHOD,
+          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION1,
+        TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION1_AUTHENTICATION_METHOD,
           G_TYPE_STRING,
-          TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION,
+          TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION1,
         NULL));
 
   if (!tp_base_client_register (priv->approver, &error))

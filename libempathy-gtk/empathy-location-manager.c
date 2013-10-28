@@ -152,7 +152,7 @@ publish_location (EmpathyLocationManager *self,
       (g_hash_table_size (self->priv->location) == 0 ? "empty" : ""),
       conn);
 
-  tp_cli_connection_interface_location_call_set_location (conn, -1,
+  tp_cli_connection_interface_location1_call_set_location (conn, -1,
       self->priv->location, publish_location_cb, NULL, NULL, G_OBJECT (self));
 }
 

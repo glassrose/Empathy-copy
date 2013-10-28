@@ -274,14 +274,14 @@ common_checks (EmpathyAuthFactory *self,
   channel = channels->data;
 
   if (tp_channel_get_channel_type_id (channel) !=
-      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION)
+      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1)
     {
       /* If we are observing we care only about ServerAuthentication channels.
        * If we are handling we care about ServerAuthentication and
        * ServerTLSConnection channels. */
       if (observe
           || tp_channel_get_channel_type_id (channel) !=
-          TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_TLS_CONNECTION)
+          TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_TLS_CONNECTION1)
         {
           g_set_error (error, TP_ERROR, TP_ERROR_INVALID_ARGUMENT,
               "Can only %s ServerTLSConnection or ServerAuthentication channels, "
@@ -296,7 +296,7 @@ common_checks (EmpathyAuthFactory *self,
           tp_proxy_get_object_path (channel));
 
   if (tp_channel_get_channel_type_id (channel) ==
-      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION
+      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1
       && handler != NULL &&
       !observe)
     {
@@ -346,7 +346,7 @@ handle_channels (TpBaseClient *handler,
 
   /* Only password authentication is supported from here */
   if (tp_channel_get_channel_type_id (channel) ==
-      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION &&
+      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1 &&
       !empathy_sasl_channel_supports_mechanism (channel,
           "X-TELEPATHY-PASSWORD"))
     {
@@ -363,13 +363,13 @@ handle_channels (TpBaseClient *handler,
 
   /* create a handler */
   if (tp_channel_get_channel_type_id (channel) ==
-      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_TLS_CONNECTION)
+      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_TLS_CONNECTION1)
     {
       empathy_server_tls_handler_new_async (channel, server_tls_handler_ready_cb,
           data);
     }
   else if (tp_channel_get_channel_type_id (channel) ==
-      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION)
+      TP_IFACE_QUARK_CHANNEL_TYPE_SERVER_AUTHENTICATION1)
     {
       empathy_server_sasl_handler_new_async (account, channel,
           server_sasl_handler_ready_cb, data);
@@ -658,7 +658,7 @@ empathy_auth_factory_constructed (GObject *obj)
   tp_base_client_take_handler_filter (client, tp_asv_new (
           /* ChannelType */
           TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION,
+          TP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION1,
           /* AuthenticationMethod */
           TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
           TP_HANDLE_TYPE_NONE, NULL));
@@ -666,10 +666,10 @@ empathy_auth_factory_constructed (GObject *obj)
   tp_base_client_take_handler_filter (client, tp_asv_new (
           /* ChannelType */
           TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION,
+          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION1,
           /* AuthenticationMethod */
-          TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION_AUTHENTICATION_METHOD,
-          G_TYPE_STRING, TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION,
+          TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION1_AUTHENTICATION_METHOD,
+          G_TYPE_STRING, TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION1,
           NULL));
 
   /* We are also an observer so that we can see new auth channels
@@ -682,10 +682,10 @@ empathy_auth_factory_constructed (GObject *obj)
   tp_base_client_take_observer_filter (client, tp_asv_new (
           /* ChannelType */
           TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION,
+          TP_IFACE_CHANNEL_TYPE_SERVER_AUTHENTICATION1,
           /* AuthenticationMethod */
-          TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION_AUTHENTICATION_METHOD,
-          G_TYPE_STRING, TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION,
+          TP_PROP_CHANNEL_TYPE_SERVER_AUTHENTICATION1_AUTHENTICATION_METHOD,
+          G_TYPE_STRING, TP_IFACE_CHANNEL_INTERFACE_SASL_AUTHENTICATION1,
           NULL));
 
   tp_base_client_set_observer_delay_approvers (client, TRUE);

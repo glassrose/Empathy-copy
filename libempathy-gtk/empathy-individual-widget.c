@@ -445,7 +445,7 @@ fetch_contact_information (EmpathyIndividualWidget *self)
   connection = tp_contact_get_connection (priv->contact);
 
   if (!tp_proxy_has_interface_by_id (connection,
-          TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_INFO))
+          TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_INFO1))
     {
       gtk_widget_hide (GET_PRIV (self)->vbox_details);
       return;

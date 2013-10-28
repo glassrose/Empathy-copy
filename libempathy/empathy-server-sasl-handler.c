@@ -376,7 +376,7 @@ channel_has_may_save_response (TpChannel *channel)
   props = tp_channel_dup_immutable_properties (channel);
 
   if (!g_variant_lookup (props,
-        TP_PROP_CHANNEL_INTERFACE_SASL_AUTHENTICATION_MAY_SAVE_RESPONSE,
+        TP_PROP_CHANNEL_INTERFACE_SASL_AUTHENTICATION1_MAY_SAVE_RESPONSE,
         "b", &may_save_response))
     {
       DEBUG ("MaySaveResponse unknown, assuming TRUE");
@@ -455,7 +455,7 @@ empathy_server_sasl_handler_cancel (EmpathyServerSASLHandler *handler)
 
   DEBUG ("Cancelling SASL mechanism...");
 
-  tp_cli_channel_interface_sasl_authentication_call_abort_sasl (
+  tp_cli_channel_interface_sasl_authentication1_call_abort_sasl (
       priv->channel, -1, TP_SASL_ABORT_REASON_USER_ABORT,
       "User cancelled the authentication",
       NULL, NULL, NULL, NULL);
