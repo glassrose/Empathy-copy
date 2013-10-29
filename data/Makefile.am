@@ -42,7 +42,7 @@ im.telepathy1.Client.Empathy.Call.service: im.telepathy1.Client.Empathy.Call.ser
 im.telepathy1.Client.Empathy.FileTransfer.service: im.telepathy1.Client.Empathy.FileTransfer.service.in
 	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
 
-clientfiledir = $(datarootdir)/telepathy/clients
+clientfiledir = $(datarootdir)/telepathy-1/clients
 clientfile_DATA = \
 	Empathy.Chat.client \
 	Empathy.Auth.client \
